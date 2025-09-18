@@ -1,3 +1,11 @@
+
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "pest-placeholder",
+      "description": "placeholder for pest identification",
+      "imageUrl": "https://picsum.photos/seed/pest-id/800/600",
+      "imageHint": "plant leaf"
+    }
+  ]
 }

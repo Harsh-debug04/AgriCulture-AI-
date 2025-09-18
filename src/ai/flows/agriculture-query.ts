@@ -1,0 +1,49 @@
+'use server';
+
+/**
+ * @fileOverview An AI agent that answers agriculture related questions.
+ *
+ * - answerAgricultureQuery - A function that answers agriculture related queries.
+ * - AnswerAgricultureQueryInput - The input type for the answerAgricultureQuery function.
+ * - AnswerAgricultureQueryOutput - The return type for the answerAgricultureQuery function.
+ */
+
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
+
+const AnswerAgricultureQueryInputSchema = z.object({
+  query: z.string().describe('The agriculture related question to answer.'),
+});
+export type AnswerAgricultureQueryInput = z.infer<typeof AnswerAgricultureQueryInputSchema>;
+
+const AnswerAgricultureQueryOutputSchema = z.object({
+  answer: z.string().describe('The answer to the agriculture related question.'),
+});
+export type AnswerAgricultureQueryOutput = z.infer<typeof AnswerAgricultureQueryOutputSchema>;
+
+export async function answerAgricultureQuery(input: AnswerAgricultureQueryInput): Promise<AnswerAgricultureQueryOutput> {
+  return answerAgricultureQueryFlow(input);
+}
+
+const prompt = ai.definePrompt({
+  name: 'answerAgricultureQueryPrompt',
+  input: {schema: AnswerAgricultureQueryInputSchema},
+  output: {schema: AnswerAgricultureQueryOutputSchema},
+  prompt: `You are an expert in agriculture, with a focus on Indian farming practices.
+
+  Please answer the following question to the best of your ability:
+
+  {{query}}`,
+});
+
+const answerAgricultureQueryFlow = ai.defineFlow(
+  {
+    name: 'answerAgricultureQueryFlow',
+    inputSchema: AnswerAgricultureQueryInputSchema,
+    outputSchema: AnswerAgricultureQueryOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);
