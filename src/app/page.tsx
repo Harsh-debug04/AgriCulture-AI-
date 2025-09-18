@@ -4,13 +4,14 @@
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Bot, User, Send, BarChart, Thermometer, Leaf, Bug, History, Star, MoreVertical, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power } from 'lucide-react';
+import { Loader2, Bot, User, Send, BarChart, Thermometer, Leaf, Bug, History, Star, MoreVertical, LogOut, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power } from 'lucide-react';
 import { answerAgricultureQuery } from '@/ai/flows/agriculture-query';
 import type { AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { getMarketData, type MarketData } from '@/ai/flows/market-data-flow';
+import { getAgriNews, type AgriNewsArticle } from '@/ai/flows/agri-news-flow';
 
 type Message = {
   id: string;
@@ -36,16 +37,7 @@ const translations = {
     inputPlaceholder: 'Type your message...',
     footerNotice: 'AgriCart Ai can make mistakes. Consider checking important information.',
     marketWatch: 'Market Watch',
-    cotton: 'Cotton (Kapas)',
-    soybean: 'Soybean',
-    paddy: 'Paddy (Basmati)',
     agriNews: 'Agri News',
-    monsoonNews: 'Monsoon advances, promising good Kharif season',
-    monsoonDesc: 'The IMD reports a timely onset of the monsoon, crucial for summer crop sowing across the country.',
-    organicScheme: 'New government scheme to boost organic farming',
-    organicDesc: 'A new subsidy program aims to encourage farmers to adopt organic practices, improving soil health and crop value.',
-    techRevolution: 'Tech startups are revolutionizing farm logistics',
-    techDesc: 'From supply chain to cold storage, technology is helping reduce post-harvest losses for farmers.',
     readMore: 'Read more...',
   },
   hi: {
@@ -64,16 +56,7 @@ const translations = {
     inputPlaceholder: 'अपना संदेश लिखें...',
     footerNotice: 'एग्रीकार्ट एआई गलतियाँ कर सकता है। महत्वपूर्ण जानकारी की जाँच करने पर विचार करें।',
     marketWatch: 'बाजार देखो',
-    cotton: 'कपास',
-    soybean: 'सोयाबीन',
-    paddy: 'धान (बासमती)',
     agriNews: 'कृषि समाचार',
-    monsoonNews: 'मानसून आगे बढ़ा, अच्छे खरीफ सीजन का वादा',
-    monsoonDesc: 'आईएमडी ने मानसून के समय पर आने की सूचना दी है, जो देश भर में गर्मियों की फसल की बुवाई के लिए महत्वपूर्ण है।',
-    organicScheme: 'जैविक खेती को बढ़ावा देने के लिए नई सरकारी योजना',
-    organicDesc: 'एक नया सब्सिडी कार्यक्रम किसानों को जैविक प्रथाओं को अपनाने, मिट्टी के स्वास्थ्य और फसल के मूल्य में सुधार करने के लिए प्रोत्साहित करना है।',
-    techRevolution: 'टेक स्टार्टअप कृषि रसद में क्रांति ला रहे हैं',
-    techDesc: 'आपूर्ति श्रृंखला से लेकर कोल्ड स्टोरेज तक, प्रौद्योगिकी किसानों के लिए कटाई के बाद के नुकसान को कम करने में मदद कर रही है।',
     readMore: 'और पढ़ें...',
   }
 };
@@ -86,6 +69,7 @@ export default function AssistantPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [marketData, setMarketData] = useState<MarketData[]>([]);
+  const [agriNews, setAgriNews] = useState<AgriNewsArticle[]>([]);
 
   const t = translations[language as keyof typeof translations];
 
@@ -100,20 +84,24 @@ export default function AssistantPage() {
   }, [language, t.initialMessage]);
 
   useEffect(() => {
-    async function fetchMarketData() {
+    async function fetchData() {
       try {
-        const data = await getMarketData(['cotton', 'soybean', 'paddy']);
-        setMarketData(data);
+        const [market, news] = await Promise.all([
+          getMarketData(['cotton', 'soybean', 'paddy']),
+          getAgriNews()
+        ]);
+        setMarketData(market);
+        setAgriNews(news);
       } catch (error) {
-        console.error('Error fetching market data:', error);
+        console.error('Error fetching data:', error);
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'Could not load market data.',
+          description: 'Could not load page data.',
         });
       }
     }
-    fetchMarketData();
+    fetchData();
   }, [toast]);
 
   const scrollToBottom = () => {
@@ -329,21 +317,23 @@ export default function AssistantPage() {
             </div>
              <h2 className="text-xl font-bold mt-8 mb-4">{t.agriNews}</h2>
             <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
-                <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <h3 className="font-semibold mb-1">{t.monsoonNews}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{t.monsoonDesc}</p>
-                    <a href="#" className="text-xs text-accent hover:underline">{t.readMore}</a>
-                </div>
-                 <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <h3 className="font-semibold mb-1">{t.organicScheme}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{t.organicDesc}</p>
-                    <a href="#" className="text-xs text-accent hover:underline">{t.readMore}</a>
-                </div>
-                <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <h3 className="font-semibold mb-1">{t.techRevolution}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{t.techDesc}</p>
-                    <a href="#" className="text-xs text-accent hover:underline">{t.readMore}</a>
-                </div>
+                {agriNews.length === 0 ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md animate-pulse">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-3"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5 mb-4"></div>
+                       <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                    </div>
+                  ))
+                ) : (
+                  agriNews.map((article) => (
+                    <div key={article.headline} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
+                        <h3 className="font-semibold mb-1">{article.headline}</h3>
+                        <p className="text-sm text-muted-foreground mb-2">{article.summary}</p>
+                        <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline">{t.readMore}</a>
+                    </div>
+                  ))
+                )}
             </div>
         </aside>
       </div>
