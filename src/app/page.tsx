@@ -4,7 +4,7 @@
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Bot, User, Send, BarChart, Thermometer, Leaf, Bug, History, Star, MoreVertical, LogOut, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power } from 'lucide-react';
+import { Loader2, Bot, User, Send, BarChart, Thermometer, Leaf, Bug, History, Star, MoreVertical, LogOut, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power, Plus } from 'lucide-react';
 import { answerAgricultureQuery } from '@/ai/flows/agriculture-query';
 import type { AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query';
 import Image from 'next/image';
@@ -12,6 +12,8 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { getMarketData, type MarketData } from '@/ai/flows/market-data-flow';
 import { getAgriNews, type AgriNewsArticle } from '@/ai/flows/agri-news-flow';
+import { Input } from '@/components/ui/input';
+
 
 type Message = {
   id: string;
@@ -39,6 +41,8 @@ const translations = {
     marketWatch: 'Market Watch',
     agriNews: 'Agri News',
     readMore: 'Read more...',
+    addCommodityPlaceholder: 'e.g., Wheat',
+    add: 'Add',
   },
   hi: {
     initialMessage: 'नमस्ते! आज मैं आपकी खेती की ज़रूरतों में कैसे सहायता कर सकता हूँ? आप मुझसे फसल की जानकारी, मौसम के पूर्वानुमान, या बाज़ार की कीमतों के बारे में पूछ सकते हैं।',
@@ -58,6 +62,8 @@ const translations = {
     marketWatch: 'बाजार देखो',
     agriNews: 'कृषि समाचार',
     readMore: 'और पढ़ें...',
+    addCommodityPlaceholder: 'उदा., गेहूं',
+    add: 'जोड़ें',
   }
 };
 
@@ -70,6 +76,9 @@ export default function AssistantPage() {
   const { toast } = useToast();
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [agriNews, setAgriNews] = useState<AgriNewsArticle[]>([]);
+  const [trackedCommodities, setTrackedCommodities] = useState<string[]>(['cotton', 'soybean', 'paddy']);
+  const [newCommodity, setNewCommodity] = useState('');
+
 
   const t = translations[language as keyof typeof translations];
 
@@ -84,25 +93,42 @@ export default function AssistantPage() {
   }, [language, t.initialMessage]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchNews() {
       try {
-        const [market, news] = await Promise.all([
-          getMarketData(['cotton', 'soybean', 'paddy']),
-          getAgriNews()
-        ]);
-        setMarketData(market);
+        const news = await getAgriNews();
         setAgriNews(news);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching news:', error);
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'Could not load page data.',
+          description: 'Could not load news data.',
         });
       }
     }
-    fetchData();
+    fetchNews();
   }, [toast]);
+  
+  useEffect(() => {
+    async function fetchMarketData() {
+      if (trackedCommodities.length === 0) {
+        setMarketData([]);
+        return;
+      }
+      try {
+        const market = await getMarketData(trackedCommodities);
+        setMarketData(market);
+      } catch (error) {
+        console.error('Error fetching market data:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not load market data.',
+        });
+      }
+    }
+    fetchMarketData();
+  }, [toast, trackedCommodities]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -169,6 +195,15 @@ export default function AssistantPage() {
         });
       }
     });
+  };
+
+  const handleAddCommodity = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const commodityToAdd = newCommodity.trim().toLowerCase();
+    if (commodityToAdd && !trackedCommodities.includes(commodityToAdd)) {
+      setTrackedCommodities([...trackedCommodities, commodityToAdd]);
+    }
+    setNewCommodity('');
   };
 
   return (
@@ -292,9 +327,21 @@ export default function AssistantPage() {
         {/* Right Sidebar */}
         <aside className="w-96 bg-card/70 dark:bg-card/70 border-l flex-col p-6 hidden lg:flex">
             <h2 className="text-xl font-bold mb-4">{t.marketWatch}</h2>
+            <form onSubmit={handleAddCommodity} className="flex items-center gap-2 mb-4">
+              <Input
+                type="text"
+                value={newCommodity}
+                onChange={(e) => setNewCommodity(e.target.value)}
+                placeholder={t.addCommodityPlaceholder}
+                className="bg-white dark:bg-card"
+              />
+              <Button type="submit" size="icon" disabled={!newCommodity.trim()}>
+                <Plus />
+              </Button>
+            </form>
             <div className="space-y-4">
-              {marketData.length === 0 ? (
-                Array.from({ length: 3 }).map((_, i) => (
+              {marketData.length === 0 && trackedCommodities.length > 0 ? (
+                Array.from({ length: trackedCommodities.length }).map((_, i) => (
                   <div key={i} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md animate-pulse">
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                     <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
@@ -304,8 +351,8 @@ export default function AssistantPage() {
                 marketData.map((item) => (
                   <div key={item.commodity} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
                       <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold">{item.commodity.charAt(0).toUpperCase() + item.commodity.slice(1)}</h3>
-                          <span className={`text-sm font-bold ${item.trend === 'up' ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'} flex items-center`}>
+                          <h3 className="font-semibold">{item.commodity}</h3>
+                          <span className={`text-sm font-bold ${item.trend === 'up' ? 'text-green-600 dark:text-green-500' : item.trend === 'down' ? 'text-red-600 dark:text-red-500' : ''} flex items-center`}>
                             {item.trend === 'up' ? <ArrowUp className="w-4 h-4"/> : <ArrowDown className="w-4 h-4"/>}
                              ₹{item.price.toLocaleString('en-IN')}
                           </span>
@@ -340,3 +387,5 @@ export default function AssistantPage() {
     </div>
   );
 }
+
+    
