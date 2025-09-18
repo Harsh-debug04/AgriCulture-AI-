@@ -20,6 +20,7 @@ type Message = {
   role: 'user' | 'assistant';
   text: string;
   component?: React.ReactNode;
+  followUpQuestions?: string[];
 };
 
 const translations = {
@@ -168,15 +169,25 @@ export default function AssistantPage() {
     }
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFollowUpClick = (question: string) => {
+    setInput(question);
+    // We are using a fake form event to trigger the submit handler
+    const fakeEvent = { preventDefault: () => {} } as React.FormEvent<HTMLFormElement>;
+    // We need to wrap this in a timeout to allow the state to update before submitting
+    setTimeout(() => handleSubmit(fakeEvent, question), 0);
+  };
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, question?: string) => {
     e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage: Message = { id: Date.now().toString(), role: 'user', text: input };
+    const currentInput = question || input;
+    if (!currentInput.trim()) return;
+  
+    const userMessage: Message = { id: Date.now().toString(), role: 'user', text: currentInput };
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = input;
-    setInput('');
-
+    if(!question) {
+      setInput('');
+    }
+  
     startTransition(async () => {
       try {
         const result: AnswerAgricultureQueryOutput = await answerAgricultureQuery({ query: currentInput, language });
@@ -184,6 +195,7 @@ export default function AssistantPage() {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           text: result.answer,
+          followUpQuestions: result.followUpQuestions,
         };
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (error) {
@@ -271,6 +283,15 @@ export default function AssistantPage() {
                        <div className={`p-4 rounded-xl shadow-md ${message.role === 'user' ? 'rounded-br-none bg-gradient-to-br from-primary to-secondary text-white' : 'rounded-tl-none bg-card dark:bg-card-dark border'}`}>
                            <p>{message.text}</p>
                            {message.component}
+                           {message.followUpQuestions && message.followUpQuestions.length > 0 && (
+                            <div className="mt-4 flex flex-col items-start gap-2">
+                              {message.followUpQuestions.map((q, i) => (
+                                <Button key={i} variant="outline" size="sm" onClick={() => handleFollowUpClick(q)} className="rounded-full">
+                                  {q}
+                                </Button>
+                              ))}
+                            </div>
+                           )}
                        </div>
                         {message.role === 'user' && (
                            <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0 shadow-md text-white">
