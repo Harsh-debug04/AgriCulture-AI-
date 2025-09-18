@@ -10,6 +10,7 @@ import type { AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query'
 import Image from 'next/image';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { getMarketData, type MarketData } from '@/ai/flows/market-data-flow';
 
 type Message = {
   id: string;
@@ -84,6 +85,7 @@ export default function AssistantPage() {
   const [isPending, startTransition] = useTransition();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [marketData, setMarketData] = useState<MarketData[]>([]);
 
   const t = translations[language as keyof typeof translations];
 
@@ -96,6 +98,23 @@ export default function AssistantPage() {
       }
     ]);
   }, [language, t.initialMessage]);
+
+  useEffect(() => {
+    async function fetchMarketData() {
+      try {
+        const data = await getMarketData(['cotton', 'soybean', 'paddy']);
+        setMarketData(data);
+      } catch (error) {
+        console.error('Error fetching market data:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not load market data.',
+        });
+      }
+    }
+    fetchMarketData();
+  }, [toast]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -286,27 +305,27 @@ export default function AssistantPage() {
         <aside className="w-96 bg-card/70 dark:bg-card/70 border-l flex-col p-6 hidden lg:flex">
             <h2 className="text-xl font-bold mb-4">{t.marketWatch}</h2>
             <div className="space-y-4">
-                <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">{t.cotton}</h3>
-                        <span className="text-sm font-bold text-green-600 dark:text-green-500 flex items-center"><ArrowUp className="w-4 h-4"/> ₹7,200</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Gujarat, Rajkot Mandi</p>
-                </div>
-                 <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">{t.soybean}</h3>
-                        <span className="text-sm font-bold text-red-600 dark:text-red-500 flex items-center"><ArrowDown className="w-4 h-4"/> ₹4,550</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Madhya Pradesh, Indore Mandi</p>
-                </div>
-                 <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">{t.paddy}</h3>
-                        <span className="text-sm font-bold text-green-600 dark:text-green-500 flex items-center"><ArrowUp className="w-4 h-4"/> ₹3,800</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Haryana, Karnal Mandi</p>
-                </div>
+              {marketData.length === 0 ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md animate-pulse">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  </div>
+                ))
+              ) : (
+                marketData.map((item) => (
+                  <div key={item.commodity} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
+                      <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold">{item.commodity.charAt(0).toUpperCase() + item.commodity.slice(1)}</h3>
+                          <span className={`text-sm font-bold ${item.trend === 'up' ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'} flex items-center`}>
+                            {item.trend === 'up' ? <ArrowUp className="w-4 h-4"/> : <ArrowDown className="w-4 h-4"/>}
+                             ₹{item.price.toLocaleString('en-IN')}
+                          </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{item.location}</p>
+                  </div>
+                ))
+              )}
             </div>
              <h2 className="text-xl font-bold mt-8 mb-4">{t.agriNews}</h2>
             <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
