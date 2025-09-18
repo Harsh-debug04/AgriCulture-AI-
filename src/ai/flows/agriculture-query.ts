@@ -13,6 +13,7 @@ import {z} from 'genkit';
 
 const AnswerAgricultureQueryInputSchema = z.object({
   query: z.string().describe('The agriculture related question to answer.'),
+  language: z.string().optional().describe('The language for the answer, e.g., "en" or "hi".'),
 });
 export type AnswerAgricultureQueryInput = z.infer<typeof AnswerAgricultureQueryInputSchema>;
 
@@ -31,9 +32,14 @@ const prompt = ai.definePrompt({
   output: {schema: AnswerAgricultureQueryOutputSchema},
   prompt: `You are an expert in agriculture, with a focus on Indian farming practices.
 
-  Please answer the following question to the best of your ability:
+  Please answer the following question to the best of your ability.
+  {{#if language}}
+  Please respond in the following language: {{language}}.
+  {{else}}
+  Please respond in English.
+  {{/if}}
 
-  {{query}}`,
+  Question: {{query}}`,
 });
 
 const answerAgricultureQueryFlow = ai.defineFlow(

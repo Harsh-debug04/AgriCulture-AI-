@@ -18,17 +18,83 @@ type Message = {
   component?: React.ReactNode;
 };
 
+const translations = {
+  en: {
+    initialMessage: 'Namaste! How can I assist you with your farming needs today? You can ask me about crop information, weather forecasts, or market prices.',
+    chatAssistant: 'Chat Assistant',
+    marketData: 'Market Data',
+    weather: 'Weather',
+    cropInfo: 'Crop Info',
+    pestControl: 'Pest Control',
+    assistantTitle: 'KrishiMitra Assistant',
+    onlineStatus: 'Online',
+    model: 'Model v3.5',
+    weatherForecast: 'Weather Forecast',
+    pestControlBtn: 'Pest Control',
+    cropAdvisory: 'Crop Advisory',
+    inputPlaceholder: 'Type your message...',
+    footerNotice: 'KrishiMitra AI can make mistakes. Consider checking important information.',
+    marketWatch: 'Market Watch',
+    cotton: 'Cotton (Kapas)',
+    soybean: 'Soybean',
+    paddy: 'Paddy (Basmati)',
+    agriNews: 'Agri News',
+    monsoonNews: 'Monsoon advances, promising good Kharif season',
+    monsoonDesc: 'The IMD reports a timely onset of the monsoon, crucial for summer crop sowing across the country.',
+    organicScheme: 'New government scheme to boost organic farming',
+    organicDesc: 'A new subsidy program aims to encourage farmers to adopt organic practices, improving soil health and crop value.',
+    techRevolution: 'Tech startups are revolutionizing farm logistics',
+    techDesc: 'From supply chain to cold storage, technology is helping reduce post-harvest losses for farmers.',
+    readMore: 'Read more...',
+  },
+  hi: {
+    initialMessage: 'नमस्ते! आज मैं आपकी खेती की ज़रूरतों में कैसे सहायता कर सकता हूँ? आप मुझसे फसल की जानकारी, मौसम के पूर्वानुमान, या बाज़ार की कीमतों के बारे में पूछ सकते हैं।',
+    chatAssistant: 'चैट सहायक',
+    marketData: 'बाजार डेटा',
+    weather: 'मौसम',
+    cropInfo: 'फसल जानकारी',
+    pestControl: 'कीट नियंत्रण',
+    assistantTitle: 'कृषि मित्र सहायक',
+    onlineStatus: 'ऑनलाइन',
+    model: 'मॉडल v3.5',
+    weatherForecast: 'मौसम पूर्वानुमान',
+    pestControlBtn: 'कीट नियंत्रण',
+    cropAdvisory: 'फसल सलाह',
+    inputPlaceholder: 'अपना संदेश लिखें...',
+    footerNotice: 'कृषि मित्र एआई गलतियाँ कर सकता है। महत्वपूर्ण जानकारी की जाँच करने पर विचार करें।',
+    marketWatch: 'बाजार देखो',
+    cotton: 'कपास',
+    soybean: 'सोयाबीन',
+    paddy: 'धान (बासमती)',
+    agriNews: 'कृषि समाचार',
+    monsoonNews: 'मानसून आगे बढ़ा, अच्छे खरीफ सीजन का वादा',
+    monsoonDesc: 'आईएमडी ने मानसून के समय पर आने की सूचना दी है, जो देश भर में गर्मियों की फसल की बुवाई के लिए महत्वपूर्ण है।',
+    organicScheme: 'जैविक खेती को बढ़ावा देने के लिए नई सरकारी योजना',
+    organicDesc: 'एक नया सब्सिडी कार्यक्रम किसानों को जैविक प्रथाओं को अपनाने, मिट्टी के स्वास्थ्य और फसल के मूल्य में सुधार करने के लिए प्रोत्साहित करना है।',
+    techRevolution: 'टेक स्टार्टअप कृषि रसद में क्रांति ला रहे हैं',
+    techDesc: 'आपूर्ति श्रृंखला से लेकर कोल्ड स्टोरेज तक, प्रौद्योगिकी किसानों के लिए कटाई के बाद के नुकसान को कम करने में मदद कर रही है।',
+    readMore: 'और पढ़ें...',
+  }
+};
+
 export default function AssistantPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      text: 'Namaste! How can I assist you with your farming needs today? You can ask me about crop information, weather forecasts, or market prices.',
-    }
-  ]);
+  const [language, setLanguage] = useState('en');
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isPending, startTransition] = useTransition();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const t = translations[language as keyof typeof translations];
+
+  useEffect(() => {
+    setMessages([
+      {
+        id: '1',
+        role: 'assistant',
+        text: t.initialMessage,
+      }
+    ]);
+  }, [language, t.initialMessage]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -79,7 +145,7 @@ export default function AssistantPage() {
 
     startTransition(async () => {
       try {
-        const result: AnswerAgricultureQueryOutput = await answerAgricultureQuery({ query: currentInput });
+        const result: AnswerAgricultureQueryOutput = await answerAgricultureQuery({ query: currentInput, language });
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
@@ -108,19 +174,19 @@ export default function AssistantPage() {
         </div>
         <nav className="flex-1 space-y-2">
             <Link href="/" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary dark:text-secondary font-semibold">
-                <Bot /> <span>Chat Assistant</span>
+                <Bot /> <span>{t.chatAssistant}</span>
             </Link>
             <Link href="/market-data" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
-                <BarChart /> <span>Market Data</span>
+                <BarChart /> <span>{t.marketData}</span>
             </Link>
             <Link href="/weather" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
-                <Thermometer /> <span>Weather</span>
+                <Thermometer /> <span>{t.weather}</span>
             </Link>
             <Link href="/crop-info" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
-                <Leaf /> <span>Crop Info</span>
+                <Leaf /> <span>{t.cropInfo}</span>
             </Link>
             <Link href="/pest-control" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
-                <Bug /> <span>Pest Control</span>
+                <Bug /> <span>{t.pestControl}</span>
             </Link>
         </nav>
       </aside>
@@ -131,13 +197,17 @@ export default function AssistantPage() {
             <header className="flex items-center justify-between p-4 border-b bg-card/50 dark:bg-card/50 backdrop-blur-sm">
                 <div className="flex items-center space-x-4">
                     <div>
-                        <h1 className="text-xl font-bold">KrishiMitra Assistant</h1>
+                        <h1 className="text-xl font-bold">{t.assistantTitle}</h1>
                         <p className="text-sm text-muted-foreground flex items-center">
-                            <CircleIcon className="text-xs mr-1 text-secondary fill-current" /> Online &nbsp;&middot;&nbsp; Model v3.5
+                            <CircleIcon className="text-xs mr-1 text-secondary fill-current" /> {t.onlineStatus} &nbsp;&middot;&nbsp; {t.model}
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">
+                    <div className="flex items-center border rounded-full p-1">
+                      <Button variant={language === 'en' ? 'secondary': 'ghost'} size="sm" className="rounded-full px-3" onClick={() => setLanguage('en')}>EN</Button>
+                      <Button variant={language === 'hi' ? 'secondary': 'ghost'} size="sm" className="rounded-full px-3" onClick={() => setLanguage('hi')}>HI</Button>
+                    </div>
                     <Button variant="ghost" size="icon" className="text-muted-foreground"><History /></Button>
                     <Button variant="ghost" size="icon" className="text-muted-foreground"><Star /></Button>
                     <Button variant="ghost" size="icon" className="text-muted-foreground" id="theme-toggle" type="button">
@@ -182,15 +252,15 @@ export default function AssistantPage() {
 
             <footer className="p-4 bg-card dark:bg-card border-t">
                 <div className="flex items-center gap-2 mb-3 px-2">
-                  <Button variant="outline" size="sm" className="rounded-full flex items-center gap-1.5"><Cloudy className="text-base"/>Weather Forecast</Button>
-                  <Button variant="outline" size="sm" className="rounded-full flex items-center gap-1.5"><Bug className="text-base"/>Pest Control</Button>
-                  <Button variant="outline" size="sm" className="rounded-full flex items-center gap-1.5"><Spade className="text-base"/>Crop Advisory</Button>
+                  <Button variant="outline" size="sm" className="rounded-full flex items-center gap-1.5"><Cloudy className="text-base"/>{t.weatherForecast}</Button>
+                  <Button variant="outline" size="sm" className="rounded-full flex items-center gap-1.5"><Bug className="text-base"/>{t.pestControlBtn}</Button>
+                  <Button variant="outline" size="sm" className="rounded-full flex items-center gap-1.5"><Spade className="text-base"/>{t.cropAdvisory}</Button>
                 </div>
                 <form onSubmit={handleSubmit} className="relative">
                     <Textarea 
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Type your message..."
+                        placeholder={t.inputPlaceholder}
                         rows={1}
                         className="w-full py-3 pl-12 pr-28 rounded-full shadow-inner resize-none bg-background dark:bg-background"
                         onKeyDown={(e) => {
@@ -208,52 +278,52 @@ export default function AssistantPage() {
                         </Button>
                      </div>
                 </form>
-                 <p className="text-xs text-center text-muted-foreground mt-2">KrishiMitra AI can make mistakes. Consider checking important information.</p>
+                 <p className="text-xs text-center text-muted-foreground mt-2">{t.footerNotice}</p>
             </footer>
         </main>
 
         {/* Right Sidebar */}
         <aside className="w-96 bg-card/70 dark:bg-card/70 border-l flex-col p-6 hidden lg:flex">
-            <h2 className="text-xl font-bold mb-4">Market Watch</h2>
+            <h2 className="text-xl font-bold mb-4">{t.marketWatch}</h2>
             <div className="space-y-4">
                 <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
                     <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">Cotton (Kapas)</h3>
+                        <h3 className="font-semibold">{t.cotton}</h3>
                         <span className="text-sm font-bold text-green-600 dark:text-green-500 flex items-center"><ArrowUp className="w-4 h-4"/> ₹7,200</span>
                     </div>
                     <p className="text-xs text-muted-foreground">Gujarat, Rajkot Mandi</p>
                 </div>
                  <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
                     <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">Soybean</h3>
+                        <h3 className="font-semibold">{t.soybean}</h3>
                         <span className="text-sm font-bold text-red-600 dark:text-red-500 flex items-center"><ArrowDown className="w-4 h-4"/> ₹4,550</span>
                     </div>
                     <p className="text-xs text-muted-foreground">Madhya Pradesh, Indore Mandi</p>
                 </div>
                  <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
                     <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">Paddy (Basmati)</h3>
+                        <h3 className="font-semibold">{t.paddy}</h3>
                         <span className="text-sm font-bold text-green-600 dark:text-green-500 flex items-center"><ArrowUp className="w-4 h-4"/> ₹3,800</span>
                     </div>
                     <p className="text-xs text-muted-foreground">Haryana, Karnal Mandi</p>
                 </div>
             </div>
-             <h2 className="text-xl font-bold mt-8 mb-4">Agri News</h2>
+             <h2 className="text-xl font-bold mt-8 mb-4">{t.agriNews}</h2>
             <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
                 <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <h3 className="font-semibold mb-1">Monsoon advances, promising good Kharif season</h3>
-                    <p className="text-sm text-muted-foreground mb-2">The IMD reports a timely onset of the monsoon, crucial for summer crop sowing across the country.</p>
-                    <a href="#" className="text-xs text-accent hover:underline">Read more...</a>
+                    <h3 className="font-semibold mb-1">{t.monsoonNews}</h3>
+                    <p className="text-sm text-muted-foreground mb-2">{t.monsoonDesc}</p>
+                    <a href="#" className="text-xs text-accent hover:underline">{t.readMore}</a>
                 </div>
                  <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <h3 className="font-semibold mb-1">New government scheme to boost organic farming</h3>
-                    <p className="text-sm text-muted-foreground mb-2">A new subsidy program aims to encourage farmers to adopt organic practices, improving soil health and crop value.</p>
-                    <a href="#" className="text-xs text-accent hover:underline">Read more...</a>
+                    <h3 className="font-semibold mb-1">{t.organicScheme}</h3>
+                    <p className="text-sm text-muted-foreground mb-2">{t.organicDesc}</p>
+                    <a href="#" className="text-xs text-accent hover:underline">{t.readMore}</a>
                 </div>
                 <div className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                    <h3 className="font-semibold mb-1">Tech startups are revolutionizing farm logistics</h3>
-                    <p className="text-sm text-muted-foreground mb-2">From supply chain to cold storage, technology is helping reduce post-harvest losses for farmers.</p>
-                    <a href="#" className="text-xs text-accent hover:underline">Read more...</a>
+                    <h3 className="font-semibold mb-1">{t.techRevolution}</h3>
+                    <p className="text-sm text-muted-foreground mb-2">{t.techDesc}</p>
+                    <a href="#" className="text-xs text-accent hover:underline">{t.readMore}</a>
                 </div>
             </div>
         </aside>
