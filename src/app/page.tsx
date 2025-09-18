@@ -4,7 +4,7 @@
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Bot, User, Send, BarChart, Thermometer, Leaf, Bug, History, Star, MoreVertical, LogOut, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power, Plus } from 'lucide-react';
+import { Loader2, Bot, User, Send, BarChart as BarChartIcon, Thermometer, Leaf, Bug, History, Star, MoreVertical, LogOut, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power, Plus } from 'lucide-react';
 import { answerAgricultureQuery } from '@/ai/flows/agriculture-query';
 import type { AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query';
 import Image from 'next/image';
@@ -13,6 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 import { getMarketData, type MarketData } from '@/ai/flows/market-data-flow';
 import { getAgriNews, type AgriNewsArticle } from '@/ai/flows/agri-news-flow';
 import { Input } from '@/components/ui/input';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
 
 
 type Message = {
@@ -21,6 +23,7 @@ type Message = {
   text: string;
   component?: React.ReactNode;
   followUpQuestions?: string[];
+  chart?: AnswerAgricultureQueryOutput['chart'];
 };
 
 const translations = {
@@ -196,6 +199,7 @@ export default function AssistantPage() {
           role: 'assistant',
           text: result.answer,
           followUpQuestions: result.followUpQuestions,
+          chart: result.chart,
         };
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (error) {
@@ -231,7 +235,7 @@ export default function AssistantPage() {
                 <Bot /> <span>{t.chatAssistant}</span>
             </Link>
             <Link href="/market-data" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
-                <BarChart /> <span>{t.marketData}</span>
+                <BarChartIcon /> <span>{t.marketData}</span>
             </Link>
             <Link href="/weather" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
                 <Thermometer /> <span>{t.weather}</span>
@@ -282,6 +286,19 @@ export default function AssistantPage() {
                        )}
                        <div className={`p-4 rounded-xl shadow-md ${message.role === 'user' ? 'rounded-br-none bg-gradient-to-br from-primary to-secondary text-white' : 'rounded-tl-none bg-card dark:bg-card-dark border'}`}>
                            <p>{message.text}</p>
+                           {message.chart && (
+                            <div className="mt-4 w-full h-64">
+                              <ChartContainer config={{}} className="w-full h-full">
+                                <BarChart data={message.chart.data} margin={{ top: 20, right: 20, bottom: 5, left: 20 }}>
+                                  <CartesianGrid vertical={false} />
+                                  <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
+                                  <YAxis />
+                                  <ChartTooltip content={<ChartTooltipContent />} />
+                                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={4} />
+                                </BarChart>
+                              </ChartContainer>
+                            </div>
+                           )}
                            {message.component}
                            {message.followUpQuestions && message.followUpQuestions.length > 0 && (
                             <div className="mt-4 flex flex-col items-start gap-2">
