@@ -9,6 +9,7 @@ import { answerAgricultureQuery } from '@/ai/flows/agriculture-query';
 import type { AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type Message = {
   id: string;
@@ -17,60 +18,13 @@ type Message = {
   component?: React.ReactNode;
 };
 
-const WheatPrices = () => (
-  <div className="bg-white dark:bg-card/50 rounded-lg p-4 border">
-    <h3 className="font-semibold text-lg mb-3">Wheat Prices (per quintal) - Punjab</h3>
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-muted-foreground">Ludhiana Mandi</span>
-          <span className="font-bold text-primary dark:text-secondary">₹2,150</span>
-        </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-          <div className="bg-gradient-to-r from-accent to-secondary h-1.5 rounded-full" style={{ width: '85%' }}></div>
-        </div>
-      </div>
-      <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-muted-foreground">Jalandhar Mandi</span>
-          <span className="font-bold text-primary dark:text-secondary">₹2,125</span>
-        </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-          <div className="bg-gradient-to-r from-accent to-secondary h-1.5 rounded-full" style={{ width: '80%' }}></div>
-        </div>
-      </div>
-      <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-muted-foreground">Amritsar Mandi</span>
-          <span className="font-bold text-primary dark:text-secondary">₹2,140</span>
-        </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-          <div className="bg-gradient-to-r from-accent to-secondary h-1.5 rounded-full" style={{ width: '83%' }}></div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-
 export default function AssistantPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
       text: 'Namaste! How can I assist you with your farming needs today? You can ask me about crop information, weather forecasts, or market prices.',
-    },
-    {
-      id: '2',
-      role: 'user',
-      text: 'What is the current market price for wheat in Punjab?',
-    },
-    {
-      id: '3',
-      role: 'assistant',
-      text: 'Certainly. Here are the current wheat market prices in major mandis of Punjab:',
-      component: <WheatPrices />,
-    },
+    }
   ]);
   const [input, setInput] = useState('');
   const [isPending, startTransition] = useTransition();
@@ -153,21 +107,21 @@ export default function AssistantPage() {
             <h1 className="text-xl font-bold">KrishiMitra AI</h1>
         </div>
         <nav className="flex-1 space-y-2">
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary dark:text-secondary font-semibold">
+            <Link href="/" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary dark:text-secondary font-semibold">
                 <Bot /> <span>Chat Assistant</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
+            </Link>
+            <Link href="/market-data" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
                 <BarChart /> <span>Market Data</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
+            </Link>
+            <Link href="/weather" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
                 <Thermometer /> <span>Weather</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
+            </Link>
+            <Link href="/crop-info" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
                 <Leaf /> <span>Crop Info</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
+            </Link>
+            <Link href="/pest-control" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 text-muted-foreground transition-colors">
                 <Bug /> <span>Pest Control</span>
-            </a>
+            </Link>
         </nav>
         <div className="mt-auto">
             <div className="bg-gradient-to-br from-accent/20 to-secondary/20 dark:from-accent/30 dark:to-secondary/30 p-4 rounded-2xl text-center">
