@@ -123,27 +123,6 @@ export default function AssistantPage() {
                 <Bug /> <span>Pest Control</span>
             </Link>
         </nav>
-        <div className="mt-auto">
-            <div className="bg-gradient-to-br from-accent/20 to-secondary/20 dark:from-accent/30 dark:to-secondary/30 p-4 rounded-2xl text-center">
-                <h3 className="font-semibold">Upgrade to Pro</h3>
-                <p className="text-sm text-muted-foreground mt-1 mb-3">Get advanced insights and unlimited queries.</p>
-                <Button className="w-full bg-accent text-white rounded-lg hover:opacity-90 transition-opacity">Upgrade</Button>
-            </div>
-             <div className="flex items-center justify-between mt-6">
-                <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
-                      <AvatarFallback className="bg-accent text-white"><User/></AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <p className="font-semibold">John Doe</p>
-                        <a href="#" className="text-xs text-muted-foreground hover:underline">View Profile</a>
-                    </div>
-                </div>
-                <Button variant="ghost" size="icon" className="text-muted-foreground">
-                    <LogOut />
-                </Button>
-            </div>
-        </div>
       </aside>
       
       {/* Main Content */}
