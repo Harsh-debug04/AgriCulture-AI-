@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'KrishiMitra AI',
+  title: 'AgriCart Ai',
   description: 'Your AI-powered agriculture assistant',
 };
 

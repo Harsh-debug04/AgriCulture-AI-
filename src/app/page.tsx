@@ -4,12 +4,12 @@
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Bot, User, Send, BarChart, Thermometer, Leaf, Bug, History, Star, MoreVertical, LogOut, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power } from 'lucide-react';
+import { Loader2, Bot, User, Send, BarChart, Thermometer, Leaf, Bug, History, Star, MoreVertical, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power } from 'lucide-react';
 import { answerAgricultureQuery } from '@/ai/flows/agriculture-query';
 import type { AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 type Message = {
   id: string;
@@ -26,14 +26,14 @@ const translations = {
     weather: 'Weather',
     cropInfo: 'Crop Info',
     pestControl: 'Pest Control',
-    assistantTitle: 'KrishiMitra Assistant',
+    assistantTitle: 'AgriCart Ai Assistant',
     onlineStatus: 'Online',
     model: 'Model v3.5',
     weatherForecast: 'Weather Forecast',
     pestControlBtn: 'Pest Control',
     cropAdvisory: 'Crop Advisory',
     inputPlaceholder: 'Type your message...',
-    footerNotice: 'KrishiMitra AI can make mistakes. Consider checking important information.',
+    footerNotice: 'AgriCart Ai can make mistakes. Consider checking important information.',
     marketWatch: 'Market Watch',
     cotton: 'Cotton (Kapas)',
     soybean: 'Soybean',
@@ -54,14 +54,14 @@ const translations = {
     weather: 'मौसम',
     cropInfo: 'फसल जानकारी',
     pestControl: 'कीट नियंत्रण',
-    assistantTitle: 'कृषि मित्र सहायक',
+    assistantTitle: 'एग्रीकार्ट एआई सहायक',
     onlineStatus: 'ऑनलाइन',
     model: 'मॉडल v3.5',
     weatherForecast: 'मौसम पूर्वानुमान',
     pestControlBtn: 'कीट नियंत्रण',
     cropAdvisory: 'फसल सलाह',
     inputPlaceholder: 'अपना संदेश लिखें...',
-    footerNotice: 'कृषि मित्र एआई गलतियाँ कर सकता है। महत्वपूर्ण जानकारी की जाँच करने पर विचार करें।',
+    footerNotice: 'एग्रीकार्ट एआई गलतियाँ कर सकता है। महत्वपूर्ण जानकारी की जाँच करने पर विचार करें।',
     marketWatch: 'बाजार देखो',
     cotton: 'कपास',
     soybean: 'सोयाबीन',
@@ -83,6 +83,7 @@ export default function AssistantPage() {
   const [input, setInput] = useState('');
   const [isPending, startTransition] = useTransition();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const t = translations[language as keyof typeof translations];
 
@@ -103,7 +104,7 @@ export default function AssistantPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  
+
   // Dark mode toggle logic
   useEffect(() => {
     const themeToggleBtn = document.getElementById('theme-toggle');
@@ -154,12 +155,11 @@ export default function AssistantPage() {
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (error) {
         console.error('Error getting answer:', error);
-        const errorMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          text: 'Sorry, I encountered an error. Please try again.',
-        };
-        setMessages((prev) => [...prev, errorMessage]);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Sorry, I encountered an error. Please try again.',
+        });
       }
     });
   };
@@ -170,7 +170,7 @@ export default function AssistantPage() {
       <aside className="w-64 bg-card dark:bg-card-dark flex-col p-4 border-r hidden md:flex">
         <div className="flex items-center space-x-3 mb-8">
             <Image alt="AgriCart logo" width={40} height={40} src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC6QkH5v_bOQ1o8v0eB5i4a-YwD5j2p_qR-l2B5T4i6k_xXgG_pQzF2a-zHwO8wX6iK_jWzVvT-sC-aE5eL5fB0mS3hR7cO6kP9xQ=s96"/>
-            <h1 className="text-xl font-bold">KrishiMitra AI</h1>
+            <h1 className="text-xl font-bold">AgriCart Ai</h1>
         </div>
         <nav className="flex-1 space-y-2">
             <Link href="/" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary dark:text-secondary font-semibold">
