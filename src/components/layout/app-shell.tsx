@@ -59,13 +59,16 @@ function MainSidebar() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.label}>
-              <Link href={item.href} legacyBehavior passHref>
+              <Link href={item.href} passHref>
                 <SidebarMenuButton
                   isActive={pathname === item.href}
                   tooltip={item.label}
+                  asChild
                 >
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.label}</span>
+                  <div>
+                    <item.icon className="h-5 w-5" />
+                    <span>{item.label}</span>
+                  </div>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
