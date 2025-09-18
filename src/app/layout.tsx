@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { AppShell } from '@/components/layout/app-shell';
 import { Toaster } from '@/components/ui/toaster';
+import { Logo } from '@/components/icons/logo';
 
 export const metadata: Metadata = {
   title: 'KrishiMitra AI',
@@ -21,7 +21,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="antialiased">
-        <AppShell>{children}</AppShell>
+        <main className="container mx-auto p-4 sm:p-6 lg:p-8 h-screen">
+          {children}
+        </main>
         <Toaster />
       </body>
     </html>
