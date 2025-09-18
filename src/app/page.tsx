@@ -265,7 +265,7 @@ export default function AssistantPage() {
                     <div key={message.id} className={`flex items-start gap-4 max-w-2xl ${message.role === 'user' ? 'ml-auto justify-end' : ''}`}>
                        {message.role === 'assistant' && (
                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0 shadow-md text-white">
-                             <Bot />
+                             <Plus />
                            </div>
                        )}
                        <div className={`p-4 rounded-xl shadow-md ${message.role === 'user' ? 'rounded-br-none bg-gradient-to-br from-primary to-secondary text-white' : 'rounded-tl-none bg-card dark:bg-card-dark border'}`}>
@@ -282,7 +282,7 @@ export default function AssistantPage() {
                 {isPending && (
                   <div className="flex items-start gap-4 max-w-2xl">
                     <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0 shadow-md text-white">
-                      <Bot />
+                      <Plus />
                     </div>
                     <div className="p-4 rounded-xl shadow-md bg-card dark:bg-card-dark border">
                       <Loader2 className="h-5 w-5 animate-spin" />
@@ -387,5 +387,4 @@ export default function AssistantPage() {
     </div>
   );
 }
-
     
