@@ -32,7 +32,7 @@ const ChartSchema = z.object({
 });
 
 const AnswerAgricultureQueryOutputSchema = z.object({
-  answer: z.string().describe('The answer to the agriculture related question.'),
+  answer: z.string().describe('The answer to the agriculture related question, formatted in markdown.'),
   followUpQuestions: z.array(z.string()).optional().describe('A list of 3 relevant follow-up questions the user might ask.'),
   chart: ChartSchema.optional().describe('Optional data for a chart to be displayed with the answer.'),
 });
@@ -46,7 +46,7 @@ const prompt = ai.definePrompt({
   name: 'answerAgricultureQueryPrompt',
   input: {schema: AnswerAgricultureQueryInputSchema},
   output: {schema: AnswerAgricultureQueryOutputSchema},
-  prompt: `You are an expert in agriculture, with a focus on Indian farming practices. Provide answers that are concise and precise. After your answer, suggest 3 relevant follow-up questions a user might have.
+  prompt: `You are an expert in agriculture, with a focus on Indian farming practices. Provide answers that are concise, precise, and well-structured using markdown (e.g., headings, lists, bold text). After your answer, suggest 3 relevant follow-up questions a user might have.
 
   If the user's query can be better understood with a chart (e.g., comparing production values, showing trends over time), provide the data for a 'bar' or 'line' chart. For example, if asked about top wheat producing states, you can provide a bar chart.
 

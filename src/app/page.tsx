@@ -15,6 +15,7 @@ import { getAgriNews, type AgriNewsArticle } from '@/ai/flows/agri-news-flow';
 import { Input } from '@/components/ui/input';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
+import { Markdown } from '@/components/ui/markdown';
 
 
 type Message = {
@@ -285,7 +286,7 @@ export default function AssistantPage() {
                            </div>
                        )}
                        <div className={`p-4 rounded-xl shadow-md ${message.role === 'user' ? 'rounded-br-none bg-gradient-to-br from-primary to-secondary text-white' : 'rounded-tl-none bg-card dark:bg-card-dark border'}`}>
-                           <p>{message.text}</p>
+                           <Markdown text={message.text} />
                            {message.chart && (
                             <div className="mt-4 w-full h-64">
                               <ChartContainer config={{}} className="w-full h-full">
