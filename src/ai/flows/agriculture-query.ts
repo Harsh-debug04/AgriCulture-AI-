@@ -30,7 +30,7 @@ const prompt = ai.definePrompt({
   name: 'answerAgricultureQueryPrompt',
   input: {schema: AnswerAgricultureQueryInputSchema},
   output: {schema: AnswerAgricultureQueryOutputSchema},
-  prompt: `You are an expert in agriculture, with a focus on Indian farming practices.
+  prompt: `You are an expert in agriculture, with a focus on Indian farming practices. Provide answers that are well-structured, concise, and precise.
 
   Please answer the following question to the best of your ability.
   {{#if language}}
