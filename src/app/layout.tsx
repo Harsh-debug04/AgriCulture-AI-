@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 'use client';
 
+import * as React from 'react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -60,6 +61,7 @@ export default function RootLayout({
   const [news, setNews] = useState<AgriNewsArticle[]>([]);
   const [loadingExtras, setLoadingExtras] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [language, setLanguage] = useState('en');
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
@@ -111,6 +113,14 @@ export default function RootLayout({
         setTrackedCommodities(prev => [...prev, lowerCommodity]);
     }
   }
+
+  const childrenWithProps = React.Children.map(children, child => {
+    if (React.isValidElement(child)) {
+      // @ts-ignore
+      return React.cloneElement(child, { language, setLanguage });
+    }
+    return child;
+  });
 
 
   return (
@@ -196,6 +206,24 @@ export default function RootLayout({
                             <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
                                 <History size={20} />
                             </Button>
+                            <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                                <Button
+                                    variant={language === 'en' ? 'secondary' : 'ghost'}
+                                    size="sm"
+                                    onClick={() => setLanguage('en')}
+                                    className="px-2 py-1 h-auto text-xs"
+                                >
+                                    EN
+                                </Button>
+                                <Button
+                                    variant={language === 'hi' ? 'secondary' : 'ghost'}
+                                    size="sm"
+                                    onClick={() => setLanguage('hi')}
+                                    className="px-2 py-1 h-auto text-xs"
+                                >
+                                    HI
+                                </Button>
+                            </div>
                             <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
                                 <Star size={20} />
                             </Button>
@@ -208,7 +236,7 @@ export default function RootLayout({
                         </div>
                     </header>
                     <div className="flex-1 overflow-y-auto">
-                        {children}
+                        {childrenWithProps}
                     </div>
                 </main>
                  <aside className="w-96 bg-surface-light/70 dark:bg-surface-dark/70 border-l border-gray-200 dark:border-gray-800/50 flex-col p-6 hidden lg:flex">

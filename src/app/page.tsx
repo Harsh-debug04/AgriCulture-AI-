@@ -21,11 +21,15 @@ type Message = {
   chart?: AnswerAgricultureQueryOutput['chart'];
 };
 
+interface HomePageProps {
+    language: string;
+    setLanguage: (lang: string) => void;
+}
 
-export default function Home() {
+
+export default function Home({ language, setLanguage }: HomePageProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
-    const [language, setLanguage] = useState('en');
     const [isPending, startTransition] = useTransition();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
@@ -141,24 +145,6 @@ export default function Home() {
                 <div ref={messagesEndRef} />
             </div>
              <footer className="p-4 bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800/50">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                    <Button
-                        variant={language === 'en' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setLanguage('en')}
-                        className="px-4 py-1.5 rounded-full"
-                    >
-                        English
-                    </Button>
-                    <Button
-                        variant={language === 'hi' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setLanguage('hi')}
-                        className="px-4 py-1.5 rounded-full"
-                    >
-                        हिन्दी
-                    </Button>
-                </div>
                  <form onSubmit={handleSubmit} className="relative">
                     <Textarea 
                         value={input}
