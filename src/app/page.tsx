@@ -150,7 +150,7 @@ export default function Home({ language }: HomePageProps) {
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type your message..."
                         rows={1}
-                        className="w-full py-3 pl-12 pr-28 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark rounded-full focus:outline-none focus:ring-2 focus:ring-primary-green/50 shadow-inner-light dark:shadow-inner-dark resize-none"
+                        className="w-full py-3 pl-12 pr-32 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark rounded-full focus:outline-none focus:ring-2 focus:ring-primary-green/50 shadow-inner-light dark:shadow-inner-dark resize-none"
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
@@ -158,8 +158,8 @@ export default function Home({ language }: HomePageProps) {
                             }
                         }}
                     />
-                    <Button type="button" variant="ghost" size="icon" className="absolute left-3 top-2.5 text-subtext-light dark:text-subtext-dark hover:text-primary-green"><Paperclip size={22}/></Button>
-                     <div className="absolute right-3 top-2.5 flex items-center gap-1">
+                    <Button type="button" variant="ghost" size="icon" className="absolute left-3 top-1/2 -translate-y-1/2 text-subtext-light dark:text-subtext-dark hover:text-primary-green"><Paperclip size={22}/></Button>
+                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                         <Button type="button" variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:text-primary-green"><Mic size={22}/></Button>
                         <Button type="submit" size="icon" className="p-2 bg-gradient-to-br from-primary-green to-secondary-green text-white rounded-full hover:opacity-90 transition-opacity" disabled={isPending || !input.trim()}>
                             {isPending ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
