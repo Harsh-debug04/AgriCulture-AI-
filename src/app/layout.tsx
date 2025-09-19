@@ -8,7 +8,6 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
-  Bot,
   PanelLeft,
   BarChartIcon,
   Thermometer,
@@ -29,7 +28,6 @@ import { getMarketData, MarketData } from '@/ai/flows/market-data-flow';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getAgriNews, AgriNewsArticle } from '@/ai/flows/agri-news-flow';
-import { Logo } from '@/components/icons/logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,9 +62,24 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
 
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    setIsDarkMode(isDark);
+    const applyTheme = (isDark: boolean) => {
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        setIsDarkMode(true);
+      } else {
+        document.documentElement.classList.remove('dark');
+        setIsDarkMode(false);
+      }
+    };
 
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      applyTheme(storedTheme === 'dark');
+    } else {
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(systemPrefersDark);
+    }
+    
     const observer = new MutationObserver(() => {
       setIsDarkMode(document.documentElement.classList.contains('dark'));
     });
@@ -80,10 +93,13 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   const toggleTheme = () => {
-    if (document.documentElement.classList.contains('dark')) {
-      document.documentElement.classList.remove('dark');
-    } else {
+    const isDark = !document.documentElement.classList.contains('dark');
+    if (isDark) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+       localStorage.setItem('theme', 'light');
     }
   };
 
