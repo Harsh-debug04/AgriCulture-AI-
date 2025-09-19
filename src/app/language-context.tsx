@@ -6,27 +6,22 @@ import { createContext, useState, useContext, ReactNode, useCallback } from 'rea
 type LanguageContextType = {
   language: string;
   setLanguage: (language: string) => void;
-  clearChat: () => void;
-  triggerClearChat: () => void;
+  undoChat: () => void;
+  undoCounter: number;
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState('en');
-  const [clearCounter, setClearCounter] = useState(0);
+  const [undoCounter, setUndoCounter] = useState(0);
 
-  const triggerClearChat = useCallback(() => {
-    setClearCounter(prev => prev + 1);
+  const triggerUndoChat = useCallback(() => {
+    setUndoCounter(prev => prev + 1);
   }, []);
-  
-  const clearChat = useCallback(() => {
-    // This is a placeholder that will be overridden by the page
-  }, []);
-
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, clearChat: triggerClearChat, triggerClearChat }}>
+    <LanguageContext.Provider value={{ language, setLanguage, undoChat: triggerUndoChat, undoCounter }}>
       {children}
     </LanguageContext.Provider>
   );

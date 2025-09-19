@@ -50,7 +50,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [news, setNews] = useState<AgriNewsArticle[]>([]);
   const [loadingExtras, setLoadingExtras] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { language, setLanguage, clearChat } = useLanguage();
+  const { language, setLanguage, undoChat } = useLanguage();
   const t = translations[language as keyof typeof translations];
 
 
@@ -128,11 +128,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         setLoadingExtras(false);
       }
     }
-    if (trackedCommodities.length > 0) {
-        fetchExtras();
-    } else {
-        getAgriNews().then(d => setNews(d)).finally(() => setLoadingExtras(false));
-    }
+    fetchExtras();
   }, [trackedCommodities])
   
   const addCommodity = (commodity: string) => {
@@ -215,7 +211,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                     HI
                                 </Button>
                             </div>
-                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark rounded-full w-8 h-8" onClick={() => clearChat()}>
+                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark rounded-full w-8 h-8" onClick={() => undoChat()}>
                                 <History size={20} />
                             </Button>
                             <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark rounded-full w-8 h-8" onClick={toggleTheme}>

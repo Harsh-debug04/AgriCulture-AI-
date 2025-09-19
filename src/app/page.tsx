@@ -30,10 +30,11 @@ export default function Home() {
     const [isPending, startTransition] = useTransition();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
-    const { language, clearChat } = useLanguage();
+    const { language, undoCounter } = useLanguage();
     const t = translations[language as keyof typeof translations];
+    const initialMessagesRef = useRef(false);
 
-    const clearMessages = useCallback(() => {
+    const handleClearChat = useCallback(() => {
         setMessages([
           {
             id: '1',
@@ -42,20 +43,30 @@ export default function Home() {
           }
         ]);
     }, [t.chat.initialMessage]);
-    
-    useEffect(() => {
-        clearMessages();
-    }, [clearMessages, clearChat]);
-    
-    useEffect(() => {
-        setMessages([
-        {
-            id: '1',
-            role: 'assistant',
-            text: t.chat.initialMessage,
+
+    const handleUndoChat = useCallback(() => {
+        if (messages.length > 2) { // Ensure we don't remove the initial message
+            setMessages(prev => prev.slice(0, -2));
+        } else {
+             toast({
+                description: "Nothing to undo.",
+            });
         }
-        ]);
-    }, [t.chat.initialMessage]);
+    }, [messages.length, toast]);
+    
+    useEffect(() => {
+        if (undoCounter > 0) {
+            handleUndoChat();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [undoCounter]);
+    
+    useEffect(() => {
+        if (!initialMessagesRef.current) {
+            handleClearChat();
+            initialMessagesRef.current = true;
+        }
+    }, [handleClearChat, t.chat.initialMessage]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
