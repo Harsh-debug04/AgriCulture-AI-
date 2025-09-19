@@ -89,10 +89,19 @@ export default {
             height: '0',
           },
         },
+        'pulse-red': {
+          '0%, 100%': { 
+            boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.7)',
+          },
+          '70%': { 
+            boxShadow: '0 0 0 10px rgba(239, 68, 68, 0)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'pulse-red': 'pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

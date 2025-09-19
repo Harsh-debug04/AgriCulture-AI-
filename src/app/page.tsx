@@ -262,7 +262,7 @@ export default function Home() {
                     />
                     <Button type="button" variant="ghost" size="icon" className="absolute left-3 top-1/2 -translate-y-1/2 text-subtext-light dark:text-subtext-dark hover:text-primary-green"><Paperclip size={22}/></Button>
                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        <Button type="button" variant="ghost" size="icon" className={`text-subtext-light dark:text-subtext-dark hover:text-primary-green ${isRecording ? 'text-red-500' : ''}`} onClick={handleMicClick}>
+                        <Button type="button" variant="ghost" size="icon" className={`text-subtext-light dark:text-subtext-dark hover:text-primary-green rounded-full ${isRecording ? 'text-red-500 animate-pulse-red' : ''}`} onClick={handleMicClick}>
                             <Mic size={22}/>
                         </Button>
                         <Button type="submit" size="icon" className="p-2 bg-gradient-to-br from-primary-green to-secondary-green text-white rounded-full hover:opacity-90 transition-opacity" disabled={isPending || !input.trim()}>
