@@ -4,8 +4,9 @@
 import { useState, useTransition, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, User, Mic, Paperclip, Send, Bot } from 'lucide-react';
+import { Loader2, User, Mic, Paperclip, Send, Bot, Volume2 } from 'lucide-react';
 import { answerAgricultureQuery, type AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query';
+import { textToSpeech } from '@/ai/flows/tts-flow';
 import { useToast } from '@/hooks/use-toast';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
@@ -18,6 +19,7 @@ type Message = {
   id: string;
   role: 'user' | 'assistant';
   text: string;
+  audioUri?: string;
   component?: React.ReactNode;
   followUpQuestions?: string[];
   chart?: AnswerAgricultureQueryOutput['chart'];
@@ -33,6 +35,9 @@ export default function Home() {
     const { language, undoCounter } = useLanguage();
     const t = translations[language as keyof typeof translations];
     const initialMessagesRef = useRef(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const recognitionRef = useRef<any>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const handleClearChat = useCallback(() => {
         setMessages([
@@ -68,6 +73,50 @@ export default function Home() {
         }
     }, [handleClearChat, t.chat.initialMessage]);
 
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(SpeechRecognition) {
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = false;
+            recognitionRef.current.lang = language === 'hi' ? 'hi-IN' : 'en-US';
+            recognitionRef.current.onresult = (event: any) => {
+                const transcript = event.results[0][0].transcript;
+                setInput(transcript);
+            };
+            recognitionRef.current.onend = () => {
+                setIsRecording(false);
+            };
+             recognitionRef.current.onerror = (event: any) => {
+                console.error('Speech recognition error:', event.error);
+                toast({
+                    variant: 'destructive',
+                    title: 'Speech Recognition Error',
+                    description: 'Could not recognize speech. Please try again.',
+                });
+                setIsRecording(false);
+            };
+        }
+    }, [language, toast]);
+    
+    const handleMicClick = () => {
+        if (isRecording) {
+            recognitionRef.current?.stop();
+            setIsRecording(false);
+        } else {
+            if (recognitionRef.current) {
+                recognitionRef.current.start();
+                setIsRecording(true);
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Not Supported',
+                    description: 'Speech recognition is not supported in your browser.',
+                });
+            }
+        }
+    };
+
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -90,33 +139,51 @@ export default function Home() {
         const userMessage: Message = { id: Date.now().toString(), role: 'user', text: currentInput };
         setMessages((prev) => [...prev, userMessage]);
         if(!question) {
-        setInput('');
+            setInput('');
         }
     
         startTransition(async () => {
-        try {
-            const result: AnswerAgricultureQueryOutput = await answerAgricultureQuery({ query: currentInput, language: language });
-            const assistantMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            text: result.answer,
-            followUpQuestions: result.followUpQuestions,
-            chart: result.chart,
-            };
-            setMessages((prev) => [...prev, assistantMessage]);
-        } catch (error) {
-            console.error('Error getting answer:', error);
-            toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Sorry, I encountered an error. Please try again.',
-            });
-        }
+            try {
+                const result: AnswerAgricultureQueryOutput = await answerAgricultureQuery({ query: currentInput, language: language });
+
+                const ttsResponse = await textToSpeech(result.answer);
+                
+                const assistantMessage: Message = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'assistant',
+                    text: result.answer,
+                    audioUri: ttsResponse.media,
+                    followUpQuestions: result.followUpQuestions,
+                    chart: result.chart,
+                };
+                setMessages((prev) => [...prev, assistantMessage]);
+                
+                if (ttsResponse.media && audioRef.current) {
+                    audioRef.current.src = ttsResponse.media;
+                    audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+                }
+
+            } catch (error) {
+                console.error('Error getting answer:', error);
+                toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Sorry, I encountered an error. Please try again.',
+                });
+            }
         });
     };
+
+    const playAudio = (audioUri: string) => {
+        if (audioRef.current) {
+            audioRef.current.src = audioUri;
+            audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+        }
+    }
     
     return (
         <div className="flex-1 flex flex-col h-full">
+             <audio ref={audioRef} className="hidden" />
             <div className="flex-1 p-6 overflow-y-auto chat-container space-y-8">
                 {messages.map((message) => (
                     <div key={message.id} className={`flex items-start gap-4 max-w-2xl ${message.role === 'user' ? 'ml-auto justify-end' : ''}`}>
@@ -129,8 +196,18 @@ export default function Home() {
                                 <User size={20} className="text-white"/>
                             </div>
                         )}
-                        <div className={`p-4 rounded-xl shadow-md ${message.role === 'user' ? 'chat-bubble-user rounded-br-none text-white' : 'chat-bubble-ai rounded-tl-none border border-gray-200/50 dark:border-gray-700/50'}`}>
+                        <div className={`p-4 rounded-xl shadow-md group relative ${message.role === 'user' ? 'chat-bubble-user rounded-br-none text-white' : 'chat-bubble-ai rounded-tl-none border border-gray-200/50 dark:border-gray-700/50'}`}>
                             <Markdown text={message.text} />
+                             {message.role === 'assistant' && message.audioUri && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute -top-2 -right-2 w-7 h-7 text-subtext-light dark:text-subtext-dark opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => playAudio(message.audioUri!)}
+                                >
+                                    <Volume2 size={16} />
+                                </Button>
+                            )}
                             {message.chart && (
                                 <div className="mt-2 w-full h-64 bg-white dark:bg-surface-dark/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700/50">
                                 <ChartContainer config={{}} className="w-full h-full">
@@ -185,7 +262,9 @@ export default function Home() {
                     />
                     <Button type="button" variant="ghost" size="icon" className="absolute left-3 top-1/2 -translate-y-1/2 text-subtext-light dark:text-subtext-dark hover:text-primary-green"><Paperclip size={22}/></Button>
                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        <Button type="button" variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:text-primary-green"><Mic size={22}/></Button>
+                        <Button type="button" variant="ghost" size="icon" className={`text-subtext-light dark:text-subtext-dark hover:text-primary-green ${isRecording ? 'text-red-500' : ''}`} onClick={handleMicClick}>
+                            <Mic size={22}/>
+                        </Button>
                         <Button type="submit" size="icon" className="p-2 bg-gradient-to-br from-primary-green to-secondary-green text-white rounded-full hover:opacity-90 transition-opacity" disabled={isPending || !input.trim()}>
                             {isPending ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
                         </Button>
