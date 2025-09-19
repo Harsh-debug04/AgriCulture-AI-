@@ -211,6 +211,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                     HI
                                 </Button>
                             </div>
+                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark rounded-full w-8 h-8" onClick={() => clearChat()}>
+                                <History size={20} />
+                            </Button>
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -224,10 +227,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                     <DropdownMenuItem onClick={toggleTheme}>
                                         {isDarkMode ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
                                         <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-                                    </DropdownMenuItem>
-                                     <DropdownMenuItem onClick={() => clearChat()}>
-                                        <History className="mr-2 h-4 w-4" />
-                                        <span>Clear Chat</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>
