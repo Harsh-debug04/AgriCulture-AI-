@@ -56,10 +56,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/', icon: CircleHelp, label: t.nav.chatAssistant },
+    { href: '/pest-control', icon: Bug, label: t.nav.pestDiagnosis },
     { href: '/market-data', icon: BarChartIcon, label: t.nav.marketData },
     { href: '/weather', icon: Thermometer, label: t.nav.weather },
     { href: '/crop-info', icon: Leaf, label: t.nav.cropInfo },
-    { href: '/pest-control', icon: Bug, label: t.nav.pestDiagnosis },
     { href: '/news', icon: Newspaper, label: t.nav.news },
 ];
 
