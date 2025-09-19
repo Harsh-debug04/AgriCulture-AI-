@@ -16,6 +16,12 @@ import { Input } from '@/components/ui/input';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
 import { Markdown } from '@/components/ui/markdown';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 type Message = {
@@ -48,6 +54,7 @@ const translations = {
     readMore: 'Read more...',
     addCommodityPlaceholder: 'e.g., Wheat',
     add: 'Add',
+    logout: 'Logout'
   },
   hi: {
     initialMessage: 'नमस्ते! आज मैं आपकी खेती की ज़रूरतों में कैसे सहायता कर सकता हूँ? आप मुझसे फसल की जानकारी, मौसम के पूर्वानुमान, या बाज़ार की कीमतों के बारे में पूछ सकते हैं।',
@@ -69,6 +76,7 @@ const translations = {
     readMore: 'और पढ़ें...',
     addCommodityPlaceholder: 'उदा., गेहूं',
     add: 'जोड़ें',
+    logout: 'लॉग आउट'
   }
 };
 
@@ -217,10 +225,20 @@ export default function AssistantPage() {
   const handleAddCommodity = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const commodityToAdd = newCommodity.trim().toLowerCase();
-    if (commodityToAdd && !trackedCommodities.includes(commodityToAdd)) {
-      setTrackedCommodities([...trackedCommodities, commodityToAdd]);
+    if (commodityToAdd && !trackedCommodities.map(c => c.toLowerCase()).includes(commodityToAdd)) {
+      setTrackedCommodities([...trackedCommodities, newCommodity.trim()]);
     }
     setNewCommodity('');
+  };
+
+  const handleClearChat = () => {
+    setMessages([
+      {
+        id: '1',
+        role: 'assistant',
+        text: t.initialMessage,
+      },
+    ]);
   };
 
   return (
@@ -267,13 +285,23 @@ export default function AssistantPage() {
                       <Button variant={language === 'en' ? 'secondary': 'ghost'} size="sm" className="rounded-full px-3" onClick={() => setLanguage('en')}>EN</Button>
                       <Button variant={language === 'hi' ? 'secondary': 'ghost'} size="sm" className="rounded-full px-3" onClick={() => setLanguage('hi')}>HI</Button>
                     </div>
-                    <Button variant="ghost" size="icon" className="text-muted-foreground"><History /></Button>
+                    <Button variant="ghost" size="icon" className="text-muted-foreground" onClick={handleClearChat}><History /></Button>
                     <Button variant="ghost" size="icon" className="text-muted-foreground"><Star /></Button>
                     <Button variant="ghost" size="icon" className="text-muted-foreground" id="theme-toggle" type="button">
                         <Power className="dark:hidden" />
                         <Power className="hidden dark:block" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="text-muted-foreground"><MoreVertical /></Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-muted-foreground"><MoreVertical /></Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => toast({ title: 'Logged out' })}>
+                          <LogOut className="mr-2 h-4 w-4" />
+                          <span>{t.logout}</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </header>
             
@@ -365,7 +393,7 @@ export default function AssistantPage() {
 
         {/* Right Sidebar */}
         <aside className="w-96 bg-card/70 dark:bg-card/70 border-l flex-col p-6 hidden lg:flex">
-             <h2 className="text-xl font-bold mb-4">{t.agriNews}</h2>
+            <h2 className="text-xl font-bold mb-4">{t.agriNews}</h2>
             <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
                 {agriNews.length === 0 ? (
                   Array.from({ length: 3 }).map((_, i) => (
