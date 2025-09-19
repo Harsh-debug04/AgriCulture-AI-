@@ -4,7 +4,7 @@
 import { useState, useTransition, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, User, Mic, Paperclip, Send } from 'lucide-react';
+import { Loader2, User, Mic, Paperclip, Send, Bot } from 'lucide-react';
 import { answerAgricultureQuery, type AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query';
 import { useToast } from '@/hooks/use-toast';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -111,7 +111,7 @@ export default function Home() {
                     <div key={message.id} className={`flex items-start gap-4 max-w-2xl ${message.role === 'user' ? 'ml-auto justify-end' : ''}`}>
                          {message.role === 'assistant' ? (
                             <div className="w-10 h-10 bg-gradient-to-br from-primary-green to-secondary-green rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                                <span className="material-symbols-outlined text-white">psychology</span>
+                                <Bot size={24} className="text-white"/>
                             </div>
                         ) : (
                             <div className="w-10 h-10 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
@@ -148,7 +148,7 @@ export default function Home() {
                 {isPending && (
                 <div className="flex items-start gap-4 max-w-2xl">
                     <div className="w-10 h-10 bg-gradient-to-br from-primary-green to-secondary-green rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                        <span className="material-symbols-outlined text-white">psychology</span>
+                        <Loader2 className="h-6 w-6 animate-spin text-white" />
                     </div>
                     <div className="chat-bubble-ai p-4 rounded-xl rounded-tl-none shadow-md border border-gray-200/50 dark:border-gray-700/50">
                         <Loader2 className="h-6 w-6 animate-spin text-primary-green" />
