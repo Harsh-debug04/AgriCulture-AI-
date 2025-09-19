@@ -9,7 +9,7 @@ export function Markdown({ text }: MarkdownProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      className="prose prose-sm dark:prose-invert max-w-none"
+      className="prose prose-sm dark:prose-invert max-w-none text-text-light dark:text-text-dark"
       components={{
         h1: ({node, ...props}) => <h1 className="text-2xl font-bold my-4" {...props} />,
         h2: ({node, ...props}) => <h2 className="text-xl font-bold my-3" {...props} />,
@@ -18,6 +18,7 @@ export function Markdown({ text }: MarkdownProps) {
         ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
         ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
         li: ({node, ...props}) => <li className="mb-1" {...props} />,
+        a: ({node, ...props}) => <a className="text-accent-blue hover:underline" {...props} />,
       }}
     >
       {text}

@@ -109,9 +109,8 @@ export default function PestControlPage() {
 
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
       <main className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card>
+        <Card className="bg-surface-light dark:bg-surface-dark shadow-card dark:shadow-card-dark rounded-2xl">
           <CardHeader>
             <CardTitle>Submit for Diagnosis</CardTitle>
             <CardDescription>Upload a photo of the affected plant and describe the issue.</CardDescription>
@@ -162,7 +161,7 @@ export default function PestControlPage() {
               rows={4}
             />
             <div className="flex gap-2">
-                <Button onClick={handleDiagnose} disabled={loading || !imagePreview || !description} className="w-full">
+                <Button onClick={handleDiagnose} disabled={loading || !imagePreview || !description} className="w-full bg-primary-green hover:bg-primary-green/90">
                 {loading ? <Loader2 className="animate-spin" /> : 'Diagnose'}
                 </Button>
                 <Button onClick={handleReset} variant="outline" className="w-full">
@@ -172,15 +171,15 @@ export default function PestControlPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-surface-light dark:bg-surface-dark shadow-card dark:shadow-card-dark rounded-2xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary"/> AI Diagnosis Result</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary-green"/> AI Diagnosis Result</CardTitle>
             <CardDescription>Our AI will analyze the image and description to identify potential issues.</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="flex justify-center items-center h-full">
-                <Loader2 size={48} className="animate-spin text-primary" />
+                <Loader2 size={48} className="animate-spin text-primary-green" />
               </div>
             ) : diagnosis ? (
               <div className="space-y-6">
@@ -190,7 +189,7 @@ export default function PestControlPage() {
                       <p><strong>Common Name:</strong> {diagnosis.identification.isPlant ? diagnosis.identification.commonName : 'N/A'}</p>
                       {renderDiagnosisStatus()}
                    </div>
-                  <p className="text-sm text-muted-foreground"><strong>Latin Name:</strong> {diagnosis.identification.isPlant ? diagnosis.identification.latinName : 'N/A'}</p>
+                  <p className="text-sm text-subtext-light dark:text-subtext-dark"><strong>Latin Name:</strong> {diagnosis.identification.isPlant ? diagnosis.identification.latinName : 'N/A'}</p>
                 </div>
                 <Separator/>
                 <div>
@@ -206,13 +205,12 @@ export default function PestControlPage() {
                 }
               </div>
             ) : (
-              <div className="text-center text-muted-foreground py-16">
+              <div className="text-center text-subtext-light dark:text-subtext-dark py-16">
                 <p>Results will appear here after diagnosis.</p>
               </div>
             )}
           </CardContent>
         </Card>
       </main>
-    </div>
   );
 }
