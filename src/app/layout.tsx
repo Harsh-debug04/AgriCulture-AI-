@@ -269,7 +269,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                  </aside>
             </div>
         </div>
-    );
+  );
 }
 
 
@@ -299,3 +299,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    
