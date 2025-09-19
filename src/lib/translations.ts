@@ -3,7 +3,7 @@ export const translations = {
     guest: "Guest",
     header: {
       title: "AgriCart Assistant",
-      status: "Online · Model v3.5",
+      status: "Online · Model v0.013",
     },
     nav: {
       chatAssistant: "Chat Assistant",
@@ -98,7 +98,7 @@ export const translations = {
     guest: "अतिथि",
     header: {
       title: "एग्रीकार्ट सहायक",
-      status: "ऑनलाइन · मॉडल v3.5",
+      status: "ऑनलाइन · मॉडल v0.013",
     },
     nav: {
       chatAssistant: "चैट सहायक",
