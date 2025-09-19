@@ -42,7 +42,7 @@ const allCommodities = ['Cotton', 'Soybean', 'Paddy', 'Wheat', 'Maize', 'Gram', 
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [trackedCommodities, setTrackedCommodities] = useState(['cotton', 'soybean', 'paddy']);
+  const [trackedCommodities, setTrackedCommodities] = useState<string[]>([]);
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [news, setNews] = useState<AgriNewsArticle[]>([]);
   const [loadingExtras, setLoadingExtras] = useState(true);
@@ -108,10 +108,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     async function fetchExtras() {
       setLoadingExtras(true);
       try {
-        const [market, newsData] = await Promise.all([
-          getMarketData(trackedCommodities),
-          getAgriNews()
-        ]);
+        const promises = [getAgriNews()];
+        if (trackedCommodities.length > 0) {
+            promises.push(getMarketData(trackedCommodities) as any);
+        } else {
+            promises.push(Promise.resolve([]));
+        }
+        
+        const [newsData, market] = await Promise.all(promises);
+
         setMarketData(market);
         setNews(newsData);
       } catch (error) {
@@ -232,7 +237,23 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     </div>
                 </main>
                  <aside className="w-96 bg-surface-light/70 dark:bg-surface-dark/70 border-l border-gray-200 dark:border-gray-800/50 flex-col p-6 hidden lg:flex">
-                     <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold mb-4">{t.agriNews.title}</h2>
+                     <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
+                         {loadingExtras ? Array.from({length: 3}).map((_, i) => (
+                              <Card key={i} className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-card dark:shadow-card-dark animate-pulse">
+                                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6 mb-2"></div>
+                                 <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full mb-1"></div>
+                                 <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                             </Card>
+                         )) : news.map(article => (
+                             <div key={article.headline} className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-card dark:shadow-card-dark">
+                                 <h3 className="font-semibold text-text-light dark:text-text-dark mb-1">{article.headline}</h3>
+                                 <p className="text-sm text-subtext-light dark:text-subtext-dark mb-2">{article.summary}</p>
+                                 <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline">{t.agriNews.readMore}</a>
+                             </div>
+                         ))}
+                     </div>
+                     <div className="flex justify-between items-center mt-8 mb-4">
                         <h2 className="text-xl font-bold">{t.marketWatch.title}</h2>
                          <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -252,7 +273,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </DropdownMenu>
                      </div>
                      <div className="space-y-4">
-                         {loadingExtras ? Array.from({length: 3}).map((_, i) => (
+                         {loadingExtras && trackedCommodities.length > 0 ? Array.from({length: trackedCommodities.length}).map((_, i) => (
                              <Card key={i} className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-card dark:shadow-card-dark animate-pulse">
                                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
@@ -267,22 +288,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                      </span>
                                  </div>
                                  <p className="text-xs text-subtext-light dark:text-subtext-dark">{item.location}</p>
-                             </div>
-                         ))}
-                     </div>
-                     <h2 className="text-xl font-bold mt-8 mb-4">{t.agriNews.title}</h2>
-                     <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
-                         {loadingExtras ? Array.from({length: 3}).map((_, i) => (
-                              <Card key={i} className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-card dark:shadow-card-dark animate-pulse">
-                                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6 mb-2"></div>
-                                 <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full mb-1"></div>
-                                 <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                             </Card>
-                         )) : news.map(article => (
-                             <div key={article.headline} className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-card dark:shadow-card-dark">
-                                 <h3 className="font-semibold text-text-light dark:text-text-dark mb-1">{article.headline}</h3>
-                                 <p className="text-sm text-subtext-light dark:text-subtext-dark mb-2">{article.summary}</p>
-                                 <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline">{t.agriNews.readMore}</a>
                              </div>
                          ))}
                      </div>
