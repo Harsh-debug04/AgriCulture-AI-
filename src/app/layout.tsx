@@ -18,6 +18,9 @@ import {
   User as UserIcon,
   ChevronDown,
   PlusCircle,
+  History,
+  Star,
+  MoreVertical
 } from 'lucide-react';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
@@ -56,6 +59,32 @@ export default function RootLayout({
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [news, setNews] = useState<AgriNewsArticle[]>([]);
   const [loadingExtras, setLoadingExtras] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setIsDarkMode(isDark);
+
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(document.documentElement.classList.contains('dark'));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const toggleTheme = () => {
+    if (document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  };
+
 
   useEffect(() => {
     async function fetchExtras() {
@@ -91,6 +120,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
       </head>
       <body className="antialiased font-['Poppins',_sans-serif] bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
@@ -156,12 +186,26 @@ export default function RootLayout({
                                 </SheetContent>
                             </Sheet>
                             <div>
-                                <h1 className="text-xl font-bold text-text-light dark:text-text-dark">Agro Track Assistant</h1>
+                                <h1 className="text-xl font-bold text-text-light dark:text-text-dark">AgriCart Assistant</h1>
                                 <p className="text-sm text-subtext-light dark:text-subtext-dark flex items-center">
-                                    <span className="material-symbols-outlined text-xs mr-1 text-secondary-green">circle</span> Online · v0.013
+                                    <span className="material-symbols-outlined text-xs mr-1 text-secondary-green">circle</span> Online · Model v3.5
                                 </p>
                             </div>
                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
+                                <History size={20} />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
+                                <Star size={20} />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
+                                {isDarkMode ? <span className="material-icons">light_mode</span> : <span className="material-icons">dark_mode</span>}
+                            </Button>
+                             <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
+                                <MoreVertical size={20}/>
+                            </Button>
+                        </div>
                     </header>
                     <div className="flex-1 overflow-y-auto">
                         {children}
