@@ -50,7 +50,7 @@ export default function Home() {
     }, [t.chat.initialMessage]);
 
     const handleUndoChat = useCallback(() => {
-        if (messages.length > 2) { // Ensure we don't remove the initial message
+        if (messages.length > 1) { // Ensure we don't remove the initial message
             setMessages(prev => prev.slice(0, -2));
         } else {
              toast({
