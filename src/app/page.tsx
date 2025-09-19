@@ -333,6 +333,16 @@ export default function AssistantPage() {
                         <Power className="dark:hidden" />
                         <Power className="hidden dark:block" />
                     </Button>
+                    {user ? (
+                       <Avatar className="w-8 h-8 shadow-md">
+                         <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'}/>
+                         <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                       </Avatar>
+                     ) : (
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0 shadow-md text-white">
+                        <Bot />
+                      </div>
+                     )}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="text-muted-foreground"><MoreVertical /></Button>
