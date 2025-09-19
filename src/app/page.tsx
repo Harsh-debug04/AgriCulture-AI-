@@ -1,7 +1,7 @@
 // src/app/page.tsx
 'use client';
 
-import { useState, useTransition, useRef, useEffect } from 'react';
+import { useState, useTransition, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, User, Mic, Paperclip, Send } from 'lucide-react';
@@ -30,9 +30,23 @@ export default function Home() {
     const [isPending, startTransition] = useTransition();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
-    const { language } = useLanguage();
+    const { language, clearChat } = useLanguage();
     const t = translations[language as keyof typeof translations];
 
+    const clearMessages = useCallback(() => {
+        setMessages([
+          {
+            id: '1',
+            role: 'assistant',
+            text: t.chat.initialMessage,
+          }
+        ]);
+    }, [t.chat.initialMessage]);
+    
+    useEffect(() => {
+        clearMessages();
+    }, [clearMessages, clearChat]);
+    
     useEffect(() => {
         setMessages([
         {

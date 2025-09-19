@@ -20,7 +20,9 @@ import {
   PlusCircle,
   History,
   Star,
-  MoreVertical
+  MoreVertical,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
@@ -36,6 +38,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LanguageProvider, useLanguage } from './language-context';
 import { translations } from '@/lib/translations';
+import { useToast } from '@/hooks/use-toast';
 
 
 const allCommodities = ['Cotton', 'Soybean', 'Paddy', 'Wheat', 'Maize', 'Gram', 'Tur', 'Mustard', 'Sugarcane', 'Groundnut'];
@@ -47,8 +50,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [news, setNews] = useState<AgriNewsArticle[]>([]);
   const [loadingExtras, setLoadingExtras] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, clearChat } = useLanguage();
   const t = translations[language as keyof typeof translations];
+  const { toast } = useToast();
 
 
   const navItems = [
@@ -200,7 +204,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </div>
                          </div>
                           <div className="flex items-center space-x-2">
-                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
+                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50" onClick={() => clearChat()}>
                                 <History size={20} />
                             </Button>
                             <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
@@ -221,13 +225,13 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                     HI
                                 </Button>
                             </div>
-                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
+                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50" onClick={() => toast({ title: "Coming soon!", description: "Favorites will be available in a future update." })}>
                                 <Star size={20} />
                             </Button>
                             <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
-                                {isDarkMode ? <span className="material-icons">light_mode</span> : <span className="material-icons">dark_mode</span>}
+                                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                             </Button>
-                             <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
+                             <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50" onClick={() => toast({ title: "Coming soon!", description: "More options will be available in a future update." })}>
                                 <MoreVertical size={20}/>
                             </Button>
                         </div>
