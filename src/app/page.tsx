@@ -81,7 +81,7 @@ export default function AssistantPage() {
   const { toast } = useToast();
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [agriNews, setAgriNews] = useState<AgriNewsArticle[]>([]);
-  const [trackedCommodities, setTrackedCommodities] = useState<string[]>(['cotton', 'soybean', 'paddy']);
+  const [trackedCommodities, setTrackedCommodities] = useState<string[]>([]);
   const [newCommodity, setNewCommodity] = useState('');
 
 
@@ -365,7 +365,27 @@ export default function AssistantPage() {
 
         {/* Right Sidebar */}
         <aside className="w-96 bg-card/70 dark:bg-card/70 border-l flex-col p-6 hidden lg:flex">
-            <h2 className="text-xl font-bold mb-4">{t.marketWatch}</h2>
+             <h2 className="text-xl font-bold mb-4">{t.agriNews}</h2>
+            <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
+                {agriNews.length === 0 ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md animate-pulse">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-3"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5 mb-4"></div>
+                       <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                    </div>
+                  ))
+                ) : (
+                  agriNews.map((article) => (
+                    <div key={article.headline} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
+                        <h3 className="font-semibold mb-1">{article.headline}</h3>
+                        <p className="text-sm text-muted-foreground mb-2">{article.summary}</p>
+                        <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline">{t.readMore}</a>
+                    </div>
+                  ))
+                )}
+            </div>
+            <h2 className="text-xl font-bold mt-8 mb-4">{t.marketWatch}</h2>
             <form onSubmit={handleAddCommodity} className="flex items-center gap-2 mb-4">
               <Input
                 type="text"
@@ -400,26 +420,6 @@ export default function AssistantPage() {
                   </div>
                 ))
               )}
-            </div>
-             <h2 className="text-xl font-bold mt-8 mb-4">{t.agriNews}</h2>
-            <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
-                {agriNews.length === 0 ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md animate-pulse">
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-3"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5 mb-4"></div>
-                       <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                    </div>
-                  ))
-                ) : (
-                  agriNews.map((article) => (
-                    <div key={article.headline} className="bg-white dark:bg-card p-4 rounded-2xl shadow-md">
-                        <h3 className="font-semibold mb-1">{article.headline}</h3>
-                        <p className="text-sm text-muted-foreground mb-2">{article.summary}</p>
-                        <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline">{t.readMore}</a>
-                    </div>
-                  ))
-                )}
             </div>
         </aside>
       </div>
