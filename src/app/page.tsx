@@ -23,11 +23,10 @@ type Message = {
 
 interface HomePageProps {
     language: string;
-    setLanguage: (lang: string) => void;
 }
 
 
-export default function Home({ language, setLanguage }: HomePageProps) {
+export default function Home({ language }: HomePageProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isPending, startTransition] = useTransition();
