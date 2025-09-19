@@ -1,5 +1,5 @@
 // src/lib/firebase.ts
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -12,7 +12,13 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+let app: FirebaseApp;
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApp();
+}
+
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 

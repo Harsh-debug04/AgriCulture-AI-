@@ -288,7 +288,9 @@ export default function AssistantPage() {
       {/* Left Sidebar */}
       <aside className="w-64 bg-card dark:bg-card-dark flex-col p-4 border-r hidden md:flex">
         <div className="flex items-center space-x-3 mb-8">
-            <Image alt="Agro Track Ai logo" width={40} height={40} src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC6QkH5v_bOQ1o8v0eB5i4a-YwD5j2p_qR-l2B5T4i6k_xXgG_pQzF2a-zHwO8wX6iK_jWzVvT-sC-aE5eL5fB0mS3hR7cO6kP9xQ=s96"/>
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0 shadow-md text-white">
+              <Bot />
+            </div>
             <h1 className="text-xl font-bold">Agro Track Ai</h1>
         </div>
         <nav className="flex-1 space-y-2">
@@ -340,7 +342,7 @@ export default function AssistantPage() {
                        </Avatar>
                      ) : (
                       <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0 shadow-md text-white">
-                        <Bot />
+                        <User />
                       </div>
                      )}
                     <DropdownMenu>
