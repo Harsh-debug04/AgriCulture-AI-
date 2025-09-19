@@ -19,7 +19,7 @@ function CropInfoContent() {
   const [crops, setCrops] = useState<CropInfo[]>([]);
   const [selectedCrop, setSelectedCrop] = useState<CropInfo | null>(null);
   const [cropDetails, setCropDetails] = useState<CropDetails | null>(null);
-  const [loadingList, setLoadingList] = useState(true);
+  const [loadingList, setLoadingList]_useState(true);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
@@ -138,8 +138,7 @@ function CropInfoContent() {
                 {filteredCrops.map(crop => (
                   <Card key={crop.name} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleCropSelect(crop)}>
                     <CardHeader>
-                      <CardTitle>{crop.name}</CardTitle>
-                      <CardDescription>{crop.description}</CardDescription>
+                      <CardTitle>{crop.name}</CardTitle>                      <CardDescription>{crop.description}</CardDescription>
                     </CardHeader>
                   </Card>
                 ))}
