@@ -33,7 +33,7 @@ const getRealtimeAgriNewsTool = ai.defineTool(
   },
   async () => {
     const { output } = await ai.generate({
-      prompt: `You are an agriculture news reporter. Search the web to find 3 recent and relevant news articles for Indian farmers. Provide a real headline, a short summary, and the actual URL for each article.`,
+      prompt: `You are an agriculture news reporter. Search the web to find 3 relevant news articles for Indian farmers from September 19, 2025. Provide a real headline, a short summary, and the actual URL for each article.`,
       output: { schema: AgriNewsOutputSchema },
     });
     return output || [];
