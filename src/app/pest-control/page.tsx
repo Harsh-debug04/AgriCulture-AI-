@@ -10,7 +10,6 @@ import { Loader2, Upload, CheckCircle, AlertTriangle, XCircle, Sparkles } from '
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Markdown } from '@/components/ui/markdown';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Separator } from '@/components/ui/separator';
 import { useLanguage } from '../language-context';
 import { translations } from '@/lib/translations';
@@ -25,8 +24,6 @@ export default function PestControlPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
   const t = translations[language as keyof typeof translations].pestDiagnosisPage;
-
-  const placeholderImage = PlaceHolderImages.find(img => img.id === 'pest-placeholder');
 
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,26 +134,9 @@ export default function PestControlPage() {
                 <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                   <Upload size={40} />
                   <p>{t.uploadPrompt}</p>
-                   {placeholderImage && <p className="text-xs">{t.usePlaceholder}</p>}
                 </div>
               )}
             </div>
-            {placeholderImage && !imagePreview &&(
-                <div className="text-center">
-                    <Button variant="link" onClick={() => {
-                        fetch(placeholderImage.imageUrl)
-                        .then(res => res.blob())
-                        .then(blob => {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                                setImagePreview(reader.result as string);
-                            };
-                            reader.readAsDataURL(blob);
-                        })
-                    }}>{t.usePlaceholder}</Button>
-                </div>
-            )}
-
 
             <Textarea
               placeholder={t.symptomPlaceholder}
