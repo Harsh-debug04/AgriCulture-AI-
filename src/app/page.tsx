@@ -44,14 +44,14 @@ const translations = {
     weather: 'Weather',
     cropInfo: 'Crop Info',
     pestControl: 'Pest Control',
-    assistantTitle: 'AgriCart Ai Assistant',
+    assistantTitle: 'Agro Track Ai Assistant',
     onlineStatus: 'Online',
     model: 'Model v0.013',
     weatherForecast: 'Weather Forecast',
     pestControlBtn: 'Pest Control',
     cropAdvisory: 'Crop Advisory',
     inputPlaceholder: 'Type your message...',
-    footerNotice: 'AgriCart Ai can make mistakes. Consider checking important information.',
+    footerNotice: 'Agro Track Ai can make mistakes. Consider checking important information.',
     marketWatch: 'Market Watch',
     agriNews: 'Agri News',
     readMore: 'Read more...',
@@ -67,14 +67,14 @@ const translations = {
     weather: 'मौसम',
     cropInfo: 'फसल जानकारी',
     pestControl: 'कीट नियंत्रण',
-    assistantTitle: 'एग्रीकार्ट एआई सहायक',
+    assistantTitle: 'एग्रो ट्रैक एआई सहायक',
     onlineStatus: 'ऑनलाइन',
     model: 'मॉडल v0.013',
     weatherForecast: 'मौसम पूर्वानुमान',
     pestControlBtn: 'कीट नियंत्रण',
     cropAdvisory: 'फसल सलाह',
     inputPlaceholder: 'अपना संदेश लिखें...',
-    footerNotice: 'एग्रीकार्ट एआई गलतियाँ कर सकता है। महत्वपूर्ण जानकारी की जाँच करने पर विचार करें।',
+    footerNotice: 'एग्रो ट्रैक एआई गलतियाँ कर सकता है। महत्वपूर्ण जानकारी की जाँच करने पर विचार करें।',
     marketWatch: 'बाजार देखो',
     agriNews: 'कृषि समाचार',
     readMore: 'और पढ़ें...',
@@ -288,8 +288,8 @@ export default function AssistantPage() {
       {/* Left Sidebar */}
       <aside className="w-64 bg-card dark:bg-card-dark flex-col p-4 border-r hidden md:flex">
         <div className="flex items-center space-x-3 mb-8">
-            <Image alt="AgriCart logo" width={40} height={40} src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC6QkH5v_bOQ1o8v0eB5i4a-YwD5j2p_qR-l2B5T4i6k_xXgG_pQzF2a-zHwO8wX6iK_jWzVvT-sC-aE5eL5fB0mS3hR7cO6kP9xQ=s96"/>
-            <h1 className="text-xl font-bold">AgriCart Ai</h1>
+            <Image alt="Agro Track Ai logo" width={40} height={40} src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC6QkH5v_bOQ1o8v0eB5i4a-YwD5j2p_qR-l2B5T4i6k_xXgG_pQzF2a-zHwO8wX6iK_jWzVvT-sC-aE5eL5fB0mS3hR7cO6kP9xQ=s96"/>
+            <h1 className="text-xl font-bold">Agro Track Ai</h1>
         </div>
         <nav className="flex-1 space-y-2">
             <Link href="/" className="flex items-center space-x-3 px-4 py-2.5 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary dark:text-secondary font-semibold">
