@@ -11,6 +11,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
 import { Markdown } from '@/components/ui/markdown';
 import { useLanguage } from './language-context';
+import { translations } from '@/lib/translations';
 
 
 type Message = {
@@ -30,16 +31,17 @@ export default function Home() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
     const { language } = useLanguage();
+    const t = translations[language as keyof typeof translations];
 
     useEffect(() => {
         setMessages([
         {
             id: '1',
             role: 'assistant',
-            text: 'Namaste! How can I assist you with your farming needs today?',
+            text: t.chat.initialMessage,
         }
         ]);
-    }, []);
+    }, [t.chat.initialMessage]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -146,7 +148,7 @@ export default function Home() {
                     <Textarea 
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Type your message..."
+                        placeholder={t.chat.placeholder}
                         rows={1}
                         className="w-full py-3 pl-12 pr-32 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark rounded-full focus:outline-none focus:ring-2 focus:ring-primary-green/50 shadow-inner-light dark:shadow-inner-dark resize-none"
                         onKeyDown={(e) => {
@@ -164,7 +166,7 @@ export default function Home() {
                         </Button>
                      </div>
                 </form>
-                <p className="text-xs text-center text-subtext-light dark:text-subtext-dark mt-2">Agro Track Ai can make mistakes. Consider checking important information.</p>
+                <p className="text-xs text-center text-subtext-light dark:text-subtext-dark mt-2">{t.chat.disclaimer}</p>
             </footer>
         </div>
     );

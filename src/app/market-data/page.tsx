@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '../language-context';
+import { translations } from '@/lib/translations';
 
 const popularCommodities = ['Cotton', 'Soybean', 'Paddy', 'Wheat', 'Maize', 'Gram', 'Tur', 'Mustard'];
 
@@ -16,6 +18,8 @@ export default function MarketDataPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language as keyof typeof translations].marketDataPage;
 
   useEffect(() => {
     async function fetchMarketData() {
@@ -28,14 +32,14 @@ export default function MarketDataPage() {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'Failed to load market data.',
+          description: t.error,
         });
       } finally {
         setLoading(false);
       }
     }
     fetchMarketData();
-  }, [toast]);
+  }, [toast, t.error]);
   
   const handleSearch = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -50,7 +54,7 @@ export default function MarketDataPage() {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'Failed to search for commodity.',
+          description: t.searchError,
         });
       } finally {
           setLoading(false);
@@ -67,17 +71,17 @@ export default function MarketDataPage() {
         <main className="p-4 md:p-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Commodity Prices</CardTitle>
-                    <CardDescription>Real-time prices from various mandis across India.</CardDescription>
+                    <CardTitle>{t.title}</CardTitle>
+                    <CardDescription>{t.description}</CardDescription>
                      <form onSubmit={handleSearch} className="flex w-full max-w-sm items-center space-x-2 pt-4">
                         <Input 
                             type="text" 
-                            placeholder="Search for a commodity..." 
+                            placeholder={t.searchPlaceholder} 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <Button type="submit" disabled={loading}>
-                            {loading ? <Loader2 className="animate-spin" /> : 'Search'}
+                            {loading ? <Loader2 className="animate-spin" /> : t.searchButton}
                         </Button>
                     </form>
                 </CardHeader>
@@ -85,9 +89,9 @@ export default function MarketDataPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Commodity</TableHead>
-                                <TableHead>Market (Mandi)</TableHead>
-                                <TableHead className="text-right">Price (per quintal)</TableHead>
+                                <TableHead>{t.table.commodity}</TableHead>
+                                <TableHead>{t.table.market}</TableHead>
+                                <TableHead className="text-right">{t.table.price}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

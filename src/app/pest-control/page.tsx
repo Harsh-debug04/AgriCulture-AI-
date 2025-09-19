@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Markdown } from '@/components/ui/markdown';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Separator } from '@/components/ui/separator';
+import { useLanguage } from '../language-context';
+import { translations } from '@/lib/translations';
 
 export default function PestControlPage() {
   const [description, setDescription] = useState('');
@@ -21,6 +23,8 @@ export default function PestControlPage() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { language } = useLanguage();
+  const t = translations[language as keyof typeof translations].pestDiagnosisPage;
 
   const placeholderImage = PlaceHolderImages.find(img => img.id === 'pest-placeholder');
 
@@ -41,8 +45,8 @@ export default function PestControlPage() {
     if (!imagePreview || !description) {
       toast({
         variant: 'destructive',
-        title: 'Missing Information',
-        description: 'Please provide both an image and a description.',
+        title: t.missingInfo,
+        description: t.missingInfoDesc,
       });
       return;
     }
@@ -60,8 +64,8 @@ export default function PestControlPage() {
       console.error("Error diagnosing pest:", error);
       toast({
         variant: 'destructive',
-        title: 'Diagnosis Failed',
-        description: 'An error occurred during diagnosis. Please try again.',
+        title: t.diagnosisFailed,
+        description: t.diagnosisFailedDesc,
       });
     } finally {
       setLoading(false);
@@ -85,7 +89,7 @@ export default function PestControlPage() {
         return (
             <div className="flex items-center gap-2 text-lg text-orange-600 dark:text-orange-400">
                 <AlertTriangle />
-                <p>Not a plant</p>
+                <p>{t.status.notAPlant}</p>
             </div>
         )
     }
@@ -94,14 +98,14 @@ export default function PestControlPage() {
       return (
         <div className="flex items-center gap-2 text-lg text-green-600 dark:text-green-400">
           <CheckCircle />
-          <p>Healthy</p>
+          <p>{t.status.healthy}</p>
         </div>
       );
     } else {
       return (
         <div className="flex items-center gap-2 text-lg text-red-600 dark:text-red-400">
           <XCircle />
-          <p>Unhealthy</p>
+          <p>{t.status.unhealthy}</p>
         </div>
       );
     }
@@ -112,8 +116,8 @@ export default function PestControlPage() {
       <main className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="bg-surface-light dark:bg-surface-dark shadow-card dark:shadow-card-dark rounded-2xl">
           <CardHeader>
-            <CardTitle>Submit for Diagnosis</CardTitle>
-            <CardDescription>Upload a photo of the affected plant and describe the issue.</CardDescription>
+            <CardTitle>{t.title}</CardTitle>
+            <CardDescription>{t.description}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div
@@ -132,8 +136,8 @@ export default function PestControlPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                   <Upload size={40} />
-                  <p>Click to upload an image</p>
-                   {placeholderImage && <p className="text-xs">or use our placeholder image</p>}
+                  <p>{t.uploadPrompt}</p>
+                   {placeholderImage && <p className="text-xs">{t.usePlaceholder}</p>}
                 </div>
               )}
             </div>
@@ -149,23 +153,23 @@ export default function PestControlPage() {
                             };
                             reader.readAsDataURL(blob);
                         })
-                    }}>Use placeholder image</Button>
+                    }}>{t.usePlaceholder}</Button>
                 </div>
             )}
 
 
             <Textarea
-              placeholder="Describe the symptoms, e.g., 'Yellow spots on leaves, black insects on the stem...'"
+              placeholder={t.symptomPlaceholder}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
             />
             <div className="flex gap-2">
                 <Button onClick={handleDiagnose} disabled={loading || !imagePreview || !description} className="w-full bg-primary-green hover:bg-primary-green/90">
-                {loading ? <Loader2 className="animate-spin" /> : 'Diagnose'}
+                {loading ? <Loader2 className="animate-spin" /> : t.diagnoseButton}
                 </Button>
                 <Button onClick={handleReset} variant="outline" className="w-full">
-                    Reset
+                    {t.resetButton}
                 </Button>
             </div>
           </CardContent>
@@ -173,8 +177,8 @@ export default function PestControlPage() {
 
         <Card className="bg-surface-light dark:bg-surface-dark shadow-card dark:shadow-card-dark rounded-2xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary-green"/> AI Diagnosis Result</CardTitle>
-            <CardDescription>Our AI will analyze the image and description to identify potential issues.</CardDescription>
+            <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary-green"/> {t.aiResultTitle}</CardTitle>
+            <CardDescription>{t.aiResultDesc}</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -184,29 +188,29 @@ export default function PestControlPage() {
             ) : diagnosis ? (
               <div className="space-y-6">
                 <div>
-                  <h3 className="font-semibold text-lg">Identification</h3>
+                  <h3 className="font-semibold text-lg">{t.identification}</h3>
                    <div className="flex justify-between items-center">
-                      <p><strong>Common Name:</strong> {diagnosis.identification.isPlant ? diagnosis.identification.commonName : 'N/A'}</p>
+                      <p><strong>{t.commonName}:</strong> {diagnosis.identification.isPlant ? diagnosis.identification.commonName : 'N/A'}</p>
                       {renderDiagnosisStatus()}
                    </div>
-                  <p className="text-sm text-subtext-light dark:text-subtext-dark"><strong>Latin Name:</strong> {diagnosis.identification.isPlant ? diagnosis.identification.latinName : 'N/A'}</p>
+                  <p className="text-sm text-subtext-light dark:text-subtext-dark"><strong>{t.latinName}:</strong> {diagnosis.identification.isPlant ? diagnosis.identification.latinName : 'N/A'}</p>
                 </div>
                 <Separator/>
                 <div>
-                  <h3 className="font-semibold text-lg">Diagnosis Details</h3>
+                  <h3 className="font-semibold text-lg">{t.diagnosisDetails}</h3>
                    <Markdown text={diagnosis.diagnosis.details}/>
                 </div>
                 {diagnosis.diagnosis.remedy && diagnosis.diagnosis.remedy.length > 2 && <Separator/>}
                 {diagnosis.diagnosis.remedy && diagnosis.diagnosis.remedy.length > 2 &&
                     <div>
-                    <h3 className="font-semibold text-lg">Recommended Actions</h3>
+                    <h3 className="font-semibold text-lg">{t.remedy}</h3>
                     <Markdown text={diagnosis.diagnosis.remedy} />
                     </div>
                 }
               </div>
             ) : (
               <div className="text-center text-subtext-light dark:text-subtext-dark py-16">
-                <p>Results will appear here after diagnosis.</p>
+                <p>{t.resultsAppearHere}</p>
               </div>
             )}
           </CardContent>

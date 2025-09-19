@@ -10,6 +10,8 @@ import { Loader2, ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Markdown } from '@/components/ui/markdown';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '../language-context';
+import { translations } from '@/lib/translations';
 import Link from 'next/link';
 
 function CropInfoContent() {
@@ -19,10 +21,12 @@ function CropInfoContent() {
   const [crops, setCrops] = useState<CropInfo[]>([]);
   const [selectedCrop, setSelectedCrop] = useState<CropInfo | null>(null);
   const [cropDetails, setCropDetails] = useState<CropDetails | null>(null);
-  const [loadingList, setLoadingList]_useState(true);
+  const [loadingList, setLoadingList] = useState(true);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language as keyof typeof translations].cropInfoPage;
 
   useEffect(() => {
     async function fetchCrops() {
@@ -41,14 +45,14 @@ function CropInfoContent() {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'Failed to load crop information.',
+          description: t.loadingError,
         });
       } finally {
         setLoadingList(false);
       }
     }
     fetchCrops();
-  }, [toast, cropNameFromQuery]);
+  }, [toast, cropNameFromQuery, t.loadingError]);
 
   const handleCropSelect = async (crop: CropInfo) => {
     setSelectedCrop(crop);
@@ -62,7 +66,7 @@ function CropInfoContent() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: `Failed to load details for ${crop.name}.`,
+        description: `${t.detailsError} ${crop.name}.`,
       });
     } finally {
       setLoadingDetails(false);
@@ -78,7 +82,7 @@ function CropInfoContent() {
         {selectedCrop ? (
           <div>
             <Button variant="outline" onClick={() => { setSelectedCrop(null); setCropDetails(null); }} className="mb-4 flex items-center gap-2">
-              <ArrowLeft size={16} /> Back to Crop List
+              <ArrowLeft size={16} /> {t.backButton}
             </Button>
             <Card>
               <CardHeader>
@@ -93,22 +97,22 @@ function CropInfoContent() {
                 ) : cropDetails ? (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">Cultivation Details</h3>
+                      <h3 className="text-xl font-semibold mb-2">{t.cultivation}</h3>
                       <Markdown text={cropDetails.cultivationDetails} />
                     </div>
                     <Separator />
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">Pest and Disease Management</h3>
+                      <h3 className="text-xl font-semibold mb-2">{t.pestManagement}</h3>
                       <Markdown text={cropDetails.pestAndDiseaseManagement} />
                     </div>
                      <Separator />
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">Post-Harvest and Market Information</h3>
+                      <h3 className="text-xl font-semibold mb-2">{t.postHarvest}</h3>
                       <Markdown text={cropDetails.postHarvestAndMarketInfo} />
                     </div>
                   </div>
                 ) : (
-                  <p>Could not load details for {selectedCrop.name}.</p>
+                  <p>{t.couldNotLoad} {selectedCrop.name}.</p>
                 )}
               </CardContent>
             </Card>
@@ -116,7 +120,7 @@ function CropInfoContent() {
         ) : (
           <div className="space-y-6">
             <Input
-              placeholder="Search for a crop..."
+              placeholder={t.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-md"

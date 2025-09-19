@@ -37,16 +37,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LanguageProvider, useLanguage } from './language-context';
+import { translations } from '@/lib/translations';
 
-
-const navItems = [
-    { href: '/', icon: CircleHelp, label: 'Chat Assistant' },
-    { href: '/market-data', icon: BarChartIcon, label: 'Market Data' },
-    { href: '/weather', icon: Thermometer, label: 'Weather' },
-    { href: '/crop-info', icon: Leaf, label: 'Crop Info' },
-    { href: '/pest-control', icon: Bug, label: 'Pest Diagnosis' },
-    { href: '/news', icon: Newspaper, label: 'News' },
-];
 
 const allCommodities = ['Cotton', 'Soybean', 'Paddy', 'Wheat', 'Maize', 'Gram', 'Tur', 'Mustard', 'Sugarcane', 'Groundnut'];
 
@@ -58,6 +50,18 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [loadingExtras, setLoadingExtras] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { language, setLanguage } = useLanguage();
+  const t = translations[language as keyof typeof translations];
+
+
+  const navItems = [
+    { href: '/', icon: CircleHelp, label: t.nav.chatAssistant },
+    { href: '/market-data', icon: BarChartIcon, label: t.nav.marketData },
+    { href: '/weather', icon: Thermometer, label: t.nav.weather },
+    { href: '/crop-info', icon: Leaf, label: t.nav.cropInfo },
+    { href: '/pest-control', icon: Bug, label: t.nav.pestDiagnosis },
+    { href: '/news', icon: Newspaper, label: t.nav.news },
+];
+
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
@@ -132,7 +136,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             <UserIcon className="text-white"/>
                         </div>
                          <div>
-                            <p className="font-semibold text-text-light dark:text-text-dark">Guest</p>
+                            <p className="font-semibold text-text-light dark:text-text-dark">{t.guest}</p>
                         </div>
                     </div>
                 </div>
@@ -168,9 +172,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                 </SheetContent>
                             </Sheet>
                             <div>
-                                <h1 className="text-xl font-bold text-text-light dark:text-text-dark">AgriCart Assistant</h1>
+                                <h1 className="text-xl font-bold text-text-light dark:text-text-dark">{t.header.title}</h1>
                                 <p className="text-sm text-subtext-light dark:text-subtext-dark flex items-center">
-                                    <span className="material-symbols-outlined text-xs mr-1 text-secondary-green">circle</span> Online · Model v3.5
+                                    <span className="material-symbols-outlined text-xs mr-1 text-secondary-green">circle</span> {t.header.status}
                                 </p>
                             </div>
                          </div>
@@ -213,12 +217,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </main>
                  <aside className="w-96 bg-surface-light/70 dark:bg-surface-dark/70 border-l border-gray-200 dark:border-gray-800/50 flex-col p-6 hidden lg:flex">
                      <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">Market Watch</h2>
+                        <h2 className="text-xl font-bold">{t.marketWatch.title}</h2>
                          <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="flex items-center gap-1">
                                     <PlusCircle size={14}/>
-                                    Add Crop
+                                    {t.marketWatch.addCrop}
                                     <ChevronDown size={14}/>
                                 </Button>
                             </DropdownMenuTrigger>
@@ -250,7 +254,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                              </div>
                          ))}
                      </div>
-                     <h2 className="text-xl font-bold mt-8 mb-4">Agri News</h2>
+                     <h2 className="text-xl font-bold mt-8 mb-4">{t.agriNews.title}</h2>
                      <div className="space-y-4 overflow-y-auto flex-1 chat-container pr-2">
                          {loadingExtras ? Array.from({length: 3}).map((_, i) => (
                               <Card key={i} className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-card dark:shadow-card-dark animate-pulse">
@@ -262,7 +266,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                              <div key={article.headline} className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-card dark:shadow-card-dark">
                                  <h3 className="font-semibold text-text-light dark:text-text-dark mb-1">{article.headline}</h3>
                                  <p className="text-sm text-subtext-light dark:text-subtext-dark mb-2">{article.summary}</p>
-                                 <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline">Read more...</a>
+                                 <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline">{t.agriNews.readMore}</a>
                              </div>
                          ))}
                      </div>
@@ -299,5 +303,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    

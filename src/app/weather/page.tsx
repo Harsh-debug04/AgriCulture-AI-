@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Sun, Cloud, CloudRain, CloudSnow, Wind, Droplets, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { useLanguage } from '../language-context';
+import { translations } from '@/lib/translations';
+
 
 const weatherIcons: { [key: string]: React.ElementType } = {
   'sunny': Sun,
@@ -37,6 +40,8 @@ export default function WeatherPage() {
   const [forecast, setForecast] = useState<WeatherForecast | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language as keyof typeof translations].weatherPage;
 
   const fetchWeather = async (loc: string) => {
     try {
@@ -48,7 +53,7 @@ export default function WeatherPage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: `Failed to load weather for ${loc}.`,
+        description: `${t.error} ${loc}.`,
       });
     } finally {
       setLoading(false);
@@ -74,17 +79,17 @@ export default function WeatherPage() {
         <div className="max-w-4xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-3xl">Weather Forecast</CardTitle>
-                    <CardDescription>Current conditions and 7-day forecast.</CardDescription>
+                    <CardTitle className="text-3xl">{t.title}</CardTitle>
+                    <CardDescription>{t.description}</CardDescription>
                      <form onSubmit={handleSearch} className="flex w-full max-w-sm items-center space-x-2 pt-4">
                         <Input
                         type="text"
-                        placeholder="Enter a location..."
+                        placeholder={t.searchPlaceholder}
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                         />
                         <Button type="submit" disabled={loading}>
-                        {loading ? <Loader2 className="animate-spin" /> : 'Search'}
+                        {loading ? <Loader2 className="animate-spin" /> : t.searchButton}
                         </Button>
                     </form>
                 </CardHeader>
@@ -106,15 +111,15 @@ export default function WeatherPage() {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-6 sm:mt-0 text-lg">
-                                    <div className="flex items-center gap-2"><Wind size={20} /> Wind</div>
+                                    <div className="flex items-center gap-2"><Wind size={20} /> {t.current.wind}</div>
                                     <div className="font-semibold">{forecast.current.windSpeed} km/h</div>
-                                    <div className="flex items-center gap-2"><Droplets size={20} /> Humidity</div>
+                                    <div className="flex items-center gap-2"><Droplets size={20} /> {t.current.humidity}</div>
                                     <div className="font-semibold">{forecast.current.humidity}%</div>
                                 </div>
                             </div>
                             {/* 7-Day Forecast */}
                             <div>
-                                <h3 className="text-xl font-bold mb-4">7-Day Forecast</h3>
+                                <h3 className="text-xl font-bold mb-4">{t.forecast}</h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
                                     {forecast.daily.map(day => (
                                         <div key={day.date} className="flex flex-col items-center p-4 bg-card rounded-lg border">
@@ -130,7 +135,7 @@ export default function WeatherPage() {
                         </div>
                     ) : (
                         <div className="text-center text-muted-foreground py-16">
-                            <p>Could not load weather forecast. Please try a different location.</p>
+                            <p>{t.loadError}</p>
                         </div>
                     )}
                 </CardContent>

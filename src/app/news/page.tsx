@@ -6,11 +6,17 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '../language-context';
+import { translations } from '@/lib/translations';
 
 export default function NewsPage() {
     const [news, setNews] = useState<AgriNewsArticle[]>([]);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
+    const { language } = useLanguage();
+    const t = translations[language as keyof typeof translations].newsPage;
+    const tAgriNews = translations[language as keyof typeof translations].agriNews;
+
 
     useEffect(() => {
         async function fetchNews() {
@@ -23,21 +29,21 @@ export default function NewsPage() {
                 toast({
                     variant: 'destructive',
                     title: 'Error',
-                    description: 'Failed to load agricultural news.',
+                    description: t.error,
                 });
             } finally {
                 setLoading(false);
             }
         }
         fetchNews();
-    }, [toast]);
+    }, [toast, t.error]);
 
     return (
         <main className="p-4 md:p-6">
             <Card className="bg-surface-light dark:bg-surface-dark shadow-card dark:shadow-card-dark rounded-2xl">
                 <CardHeader>
-                    <CardTitle>Latest Agricultural News</CardTitle>
-                    <CardDescription>Stay updated with the latest happenings in the agriculture sector.</CardDescription>
+                    <CardTitle>{t.title}</CardTitle>
+                    <CardDescription>{t.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {loading ? (
@@ -63,7 +69,7 @@ export default function NewsPage() {
                                     </CardContent>
                                     <div className="p-2 mt-auto">
                                         <a href={article.url} target="_blank" rel="noopener noreferrer">
-                                            <Button variant="link" className="text-accent-blue p-0">Read more...</Button>
+                                            <Button variant="link" className="text-accent-blue p-0">{tAgriNews.readMore}</Button>
                                         </a>
                                     </div>
                                 </Card>
