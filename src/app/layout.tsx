@@ -128,7 +128,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         setLoadingExtras(false);
       }
     }
-    fetchExtras();
+    if (trackedCommodities.length > 0) {
+        fetchExtras();
+    } else {
+        getAgriNews().then(d => setNews(d)).finally(() => setLoadingExtras(false));
+    }
   }, [trackedCommodities])
   
   const addCommodity = (commodity: string) => {
@@ -214,7 +218,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark rounded-full w-8 h-8" onClick={() => clearChat()}>
                                 <History size={20} />
                             </Button>
-
+                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark rounded-full w-8 h-8" onClick={toggleTheme}>
+                                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                            </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark rounded-full w-8 h-8">
@@ -223,11 +229,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>{t.guest}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={toggleTheme}>
-                                        {isDarkMode ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
-                                        <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>
                                         <LogOut className="mr-2 h-4 w-4" />
