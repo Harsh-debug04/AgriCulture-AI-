@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
 import { Markdown } from '@/components/ui/markdown';
+import { useLanguage } from './language-context';
 
 
 type Message = {
@@ -21,17 +22,14 @@ type Message = {
   chart?: AnswerAgricultureQueryOutput['chart'];
 };
 
-interface HomePageProps {
-    language: string;
-}
 
-
-export default function Home({ language }: HomePageProps) {
+export default function Home() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isPending, startTransition] = useTransition();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
+    const { language } = useLanguage();
 
     useEffect(() => {
         setMessages([

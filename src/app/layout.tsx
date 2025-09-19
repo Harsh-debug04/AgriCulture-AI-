@@ -35,7 +35,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { LanguageProvider, useLanguage } from './language-context';
 
 
 const navItems = [
@@ -49,19 +50,14 @@ const navItems = [
 
 const allCommodities = ['Cotton', 'Soybean', 'Paddy', 'Wheat', 'Maize', 'Gram', 'Tur', 'Mustard', 'Sugarcane', 'Groundnut'];
 
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [trackedCommodities, setTrackedCommodities] = useState(['cotton', 'soybean', 'paddy']);
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [news, setNews] = useState<AgriNewsArticle[]>([]);
   const [loadingExtras, setLoadingExtras] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [language, setLanguage] = useState('en');
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
@@ -114,27 +110,8 @@ export default function RootLayout({
     }
   }
 
-  const childrenWithProps = React.Children.map(children, child => {
-    if (React.isValidElement(child)) {
-      // @ts-ignore
-      return React.cloneElement(child, { language });
-    }
-    return child;
-  });
-
-
   return (
-    <html lang="en" suppressHydrationWarning>
-       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-
-      </head>
-      <body className="antialiased font-['Poppins',_sans-serif] bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
-        <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full">
             {/* Desktop Sidebar */}
             <aside className="w-64 bg-surface-light dark:bg-surface-dark flex-col p-4 border-r border-gray-200 dark:border-gray-800/50 hidden md:flex">
                 <div className="flex items-center space-x-3 mb-8">
@@ -231,7 +208,7 @@ export default function RootLayout({
                         </div>
                     </header>
                     <div className="flex-1 overflow-y-auto">
-                        {childrenWithProps}
+                        {children}
                     </div>
                 </main>
                  <aside className="w-96 bg-surface-light/70 dark:bg-surface-dark/70 border-l border-gray-200 dark:border-gray-800/50 flex-col p-6 hidden lg:flex">
@@ -292,7 +269,32 @@ export default function RootLayout({
                  </aside>
             </div>
         </div>
-        <Toaster />
+    );
+}
+
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+      </head>
+      <body className="antialiased font-['Poppins',_sans-serif] bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+        <LanguageProvider>
+          <AppLayout>
+            {children}
+          </AppLayout>
+          <Toaster />
+        </LanguageProvider>
       </body>
     </html>
   );
