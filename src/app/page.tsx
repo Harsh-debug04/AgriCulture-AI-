@@ -10,9 +10,6 @@ import { useToast } from '@/hooks/use-toast';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
 import { Markdown } from '@/components/ui/markdown';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { auth } from '@/lib/firebase';
-import type { User as FirebaseUser } from 'firebase/auth';
 
 
 type Message = {
@@ -31,13 +28,6 @@ export default function Home() {
     const [isPending, startTransition] = useTransition();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
-    const [user, setUser] = useState<FirebaseUser | null>(null);
-
-
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(setUser);
-        return () => unsubscribe();
-    }, []);
 
     useEffect(() => {
         setMessages([
@@ -105,11 +95,6 @@ export default function Home() {
                             <div className="w-10 h-10 bg-gradient-to-br from-primary-green to-secondary-green rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
                                 <span className="material-symbols-outlined text-white">psychology</span>
                             </div>
-                        ) : user ? (
-                            <Avatar className="w-10 h-10">
-                                <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
-                                <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                            </Avatar>
                         ) : (
                             <div className="w-10 h-10 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
                                 <User size={20} className="text-white"/>

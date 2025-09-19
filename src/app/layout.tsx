@@ -13,23 +13,10 @@ import {
   Thermometer,
   Leaf,
   Bug,
-  MoreVertical,
-  LogOut,
-  LogIn,
-  User as UserIcon,
   Newspaper,
   CircleHelp,
+  User as UserIcon,
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { auth, googleProvider } from '@/lib/firebase';
-import { signInWithPopup, signOut, onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
-import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { getMarketData, MarketData } from '@/ai/flows/market-data-flow';
@@ -54,19 +41,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [user, setUser] = useState<FirebaseUser | null>(null);
-  const { toast } = useToast();
-  const [isNavCollapsed, setIsNavCollapsed] = useState(false);
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [news, setNews] = useState<AgriNewsArticle[]>([]);
   const [loadingExtras, setLoadingExtras] = useState(true);
-
-   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     async function fetchExtras() {
@@ -86,34 +63,6 @@ export default function RootLayout({
     }
     fetchExtras();
   }, [])
-
-  const handleLogin = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-      toast({ title: 'Logged in successfully!' });
-    } catch (error) {
-      console.error("Error signing in:", error);
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: 'Could not sign in with Google. Please try again.',
-      });
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast({ title: 'Logged out' });
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast({
-        variant: 'destructive',
-        title: 'Logout Failed',
-        description: 'Could not sign out. Please try again.',
-      });
-    }
-  };
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -146,45 +95,13 @@ export default function RootLayout({
                         <p className="text-sm text-subtext-light dark:text-subtext-dark mt-1 mb-3">Get advanced insights and unlimited queries.</p>
                         <Button className="w-full bg-accent-blue text-white rounded-lg hover:opacity-90 transition-opacity">Upgrade</Button>
                     </div>
-                    <div className="flex items-center justify-between mt-6">
-                        <div className="flex items-center space-x-3">
-                            {user ? (
-                               <Avatar className="w-10 h-10 shadow-md">
-                                 <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'}/>
-                                 <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                               </Avatar>
-                             ) : (
-                                <div className="w-10 h-10 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0">
-                                    <UserIcon className="text-white"/>
-                                </div>
-                             )}
-                             <div>
-                                <p className="font-semibold text-text-light dark:text-text-dark">{user ? user.displayName : 'Guest'}</p>
-                                {user ? (
-                                     <a className="text-xs text-subtext-light dark:text-subtext-dark hover:underline" href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>Logout</a>
-                                ) : (
-                                    <a className="text-xs text-subtext-light dark:text-subtext-dark hover:underline" href="#" onClick={(e) => { e.preventDefault(); handleLogin(); }}>Login</a>
-                                )}
-                            </div>
+                     <div className="flex items-center space-x-3 mt-6">
+                        <div className="w-10 h-10 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0">
+                            <UserIcon className="text-white"/>
                         </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-100 dark:hover:bg-gray-700/50 p-2 rounded-full"><MoreVertical /></Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                {user ? (
-                                <DropdownMenuItem onClick={handleLogout}>
-                                    <LogOut className="mr-2 h-4 w-4" />
-                                    <span>Logout</span>
-                                </DropdownMenuItem>
-                                ) : (
-                                <DropdownMenuItem onClick={handleLogin}>
-                                    <LogIn className="mr-2 h-4 w-4" />
-                                    <span>Login with Google</span>
-                                </DropdownMenuItem>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                         <div>
+                            <p className="font-semibold text-text-light dark:text-text-dark">Guest</p>
+                        </div>
                     </div>
                 </div>
             </aside>
