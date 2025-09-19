@@ -19,10 +19,9 @@ import {
   ChevronDown,
   PlusCircle,
   History,
-  Star,
-  MoreVertical,
   Sun,
-  Moon
+  Moon,
+  LogOut
 } from 'lucide-react';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
@@ -35,10 +34,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { LanguageProvider, useLanguage } from './language-context';
 import { translations } from '@/lib/translations';
-import { useToast } from '@/hooks/use-toast';
 
 
 const allCommodities = ['Cotton', 'Soybean', 'Paddy', 'Wheat', 'Maize', 'Gram', 'Tur', 'Mustard', 'Sugarcane', 'Groundnut'];
@@ -52,7 +52,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { language, setLanguage, clearChat } = useLanguage();
   const t = translations[language as keyof typeof translations];
-  const { toast } = useToast();
 
 
   const navItems = [
@@ -155,16 +154,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Link>
                     ))}
                 </nav>
-                 <div className="mt-auto">
-                     <div className="flex items-center space-x-3 mt-6">
-                        <div className="w-10 h-10 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0">
-                            <UserIcon className="text-white"/>
-                        </div>
-                         <div>
-                            <p className="font-semibold text-text-light dark:text-text-dark">{t.guest}</p>
-                        </div>
-                    </div>
-                </div>
             </aside>
             <div className="flex-1 flex h-screen overflow-hidden">
                 <main className="flex-1 flex flex-col bg-background-light dark:bg-background-dark">
@@ -204,9 +193,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </div>
                          </div>
                           <div className="flex items-center space-x-2">
-                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50" onClick={() => clearChat()}>
-                                <History size={20} />
-                            </Button>
                             <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
                                 <Button
                                     variant={language === 'en' ? 'secondary' : 'ghost'}
@@ -225,15 +211,31 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                     HI
                                 </Button>
                             </div>
-                            <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50" onClick={() => toast({ title: "Coming soon!", description: "Favorites will be available in a future update." })}>
-                                <Star size={20} />
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50">
-                                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                            </Button>
-                             <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700/50" onClick={() => toast({ title: "Coming soon!", description: "More options will be available in a future update." })}>
-                                <MoreVertical size={20}/>
-                            </Button>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="text-subtext-light dark:text-subtext-dark rounded-full w-8 h-8">
+                                        <UserIcon size={20} />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>{t.guest}</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={toggleTheme}>
+                                        {isDarkMode ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
+                                        <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                                    </DropdownMenuItem>
+                                     <DropdownMenuItem onClick={() => clearChat()}>
+                                        <History className="mr-2 h-4 w-4" />
+                                        <span>Clear Chat</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        <span>Log out</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </header>
                     <div className="flex-1 overflow-y-auto">
