@@ -1,6 +1,7 @@
 // src/app/crop-info/page.tsx
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { getCropInfoList, getCropDetails, CropInfo, CropDetails } from '@/ai/flows/crop-info-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,10 @@ import { Markdown } from '@/components/ui/markdown';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 
-export default function CropInfoPage() {
+function CropInfoContent() {
+  const searchParams = useSearchParams();
+  const cropNameFromQuery = searchParams.get('name');
+  
   const [crops, setCrops] = useState<CropInfo[]>([]);
   const [selectedCrop, setSelectedCrop] = useState<CropInfo | null>(null);
   const [cropDetails, setCropDetails] = useState<CropDetails | null>(null);
@@ -26,6 +30,12 @@ export default function CropInfoPage() {
         setLoadingList(true);
         const cropList = await getCropInfoList();
         setCrops(cropList);
+        if (cropNameFromQuery) {
+            const cropFromQuery = cropList.find(c => c.name.toLowerCase() === cropNameFromQuery.toLowerCase());
+            if (cropFromQuery) {
+                handleCropSelect(cropFromQuery);
+            }
+        }
       } catch (error) {
         console.error("Error fetching crop list:", error);
         toast({
@@ -38,7 +48,7 @@ export default function CropInfoPage() {
       }
     }
     fetchCrops();
-  }, [toast]);
+  }, [toast, cropNameFromQuery]);
 
   const handleCropSelect = async (crop: CropInfo) => {
     setSelectedCrop(crop);
@@ -62,15 +72,8 @@ export default function CropInfoPage() {
   const filteredCrops = crops.filter(crop =>
     crop.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="p-4 border-b flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/"><ArrowLeft /></Link>
-        </Button>
-        <h1 className="text-2xl font-bold">Crop Information</h1>
-      </header>
       <main className="p-4 md:p-6">
         {selectedCrop ? (
           <div>
@@ -145,6 +148,13 @@ export default function CropInfoPage() {
           </div>
         )}
       </main>
-    </div>
-  );
+  )
+}
+
+export default function CropInfoPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <CropInfoContent />
+        </Suspense>
+    )
 }

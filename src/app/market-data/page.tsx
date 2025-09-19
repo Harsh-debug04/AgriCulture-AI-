@@ -6,9 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, Loader2, ArrowLeft } from 'lucide-react';
+import { ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
 
 const popularCommodities = ['Cotton', 'Soybean', 'Paddy', 'Wheat', 'Maize', 'Gram', 'Tur', 'Mustard'];
 
@@ -65,12 +64,6 @@ export default function MarketDataPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-        <header className="p-4 border-b flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/"><ArrowLeft /></Link>
-          </Button>
-          <h1 className="text-2xl font-bold">Market Data</h1>
-        </header>
         <main className="p-4 md:p-6">
             <Card>
                 <CardHeader>

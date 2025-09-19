@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, ArrowLeft, Upload, CheckCircle, AlertTriangle, XCircle, Sparkles } from 'lucide-react';
+import { Loader2, Upload, CheckCircle, AlertTriangle, XCircle, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
 import { Markdown } from '@/components/ui/markdown';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Separator } from '@/components/ui/separator';
 
 export default function PestControlPage() {
   const [description, setDescription] = useState('');
@@ -38,7 +38,7 @@ export default function PestControlPage() {
   };
 
   const handleDiagnose = async () => {
-    if (!imageFile || !description) {
+    if (!imagePreview || !description) {
       toast({
         variant: 'destructive',
         title: 'Missing Information',
@@ -51,16 +51,11 @@ export default function PestControlPage() {
     setDiagnosis(null);
 
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(imageFile);
-      reader.onloadend = async () => {
-        const base64data = reader.result as string;
         const result = await diagnosePest({
-          photoDataUri: base64data,
+          photoDataUri: imagePreview,
           description: description,
         });
         setDiagnosis(result);
-      };
     } catch (error) {
       console.error("Error diagnosing pest:", error);
       toast({
@@ -115,12 +110,6 @@ export default function PestControlPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="p-4 border-b flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/"><ArrowLeft /></Link>
-        </Button>
-        <h1 className="text-2xl font-bold">Pest & Disease Diagnosis</h1>
-      </header>
       <main className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
@@ -151,7 +140,17 @@ export default function PestControlPage() {
             </div>
             {placeholderImage && !imagePreview &&(
                 <div className="text-center">
-                    <Button variant="link" onClick={() => setImagePreview(placeholderImage.imageUrl)}>Use placeholder image</Button>
+                    <Button variant="link" onClick={() => {
+                        fetch(placeholderImage.imageUrl)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                                setImagePreview(reader.result as string);
+                            };
+                            reader.readAsDataURL(blob);
+                        })
+                    }}>Use placeholder image</Button>
                 </div>
             )}
 
@@ -163,7 +162,7 @@ export default function PestControlPage() {
               rows={4}
             />
             <div className="flex gap-2">
-                <Button onClick={handleDiagnose} disabled={loading || !imageFile || !description} className="w-full">
+                <Button onClick={handleDiagnose} disabled={loading || !imagePreview || !description} className="w-full">
                 {loading ? <Loader2 className="animate-spin" /> : 'Diagnose'}
                 </Button>
                 <Button onClick={handleReset} variant="outline" className="w-full">
@@ -198,11 +197,13 @@ export default function PestControlPage() {
                   <h3 className="font-semibold text-lg">Diagnosis Details</h3>
                    <Markdown text={diagnosis.diagnosis.details}/>
                 </div>
-                <Separator/>
-                <div>
-                  <h3 className="font-semibold text-lg">Recommended Actions</h3>
-                  <Markdown text={diagnosis.diagnosis.remedy} />
-                </div>
+                {diagnosis.diagnosis.remedy && diagnosis.diagnosis.remedy.length > 2 && <Separator/>}
+                {diagnosis.diagnosis.remedy && diagnosis.diagnosis.remedy.length > 2 &&
+                    <div>
+                    <h3 className="font-semibold text-lg">Recommended Actions</h3>
+                    <Markdown text={diagnosis.diagnosis.remedy} />
+                    </div>
+                }
               </div>
             ) : (
               <div className="text-center text-muted-foreground py-16">
