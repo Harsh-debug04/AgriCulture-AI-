@@ -128,7 +128,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         setLoadingExtras(false);
       }
     }
-    fetchExtras();
+    if(trackedCommodities.length > 0){
+        fetchExtras();
+    } else {
+        getAgriNews().then(newsData => {
+            setNews(newsData);
+        }).catch(error => {
+            console.error("Error fetching news:", error);
+        }).finally(() => setLoadingExtras(false));
+    }
   }, [trackedCommodities])
   
   const addCommodity = (commodity: string) => {
@@ -143,8 +151,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Desktop Sidebar */}
             <aside className="w-64 bg-surface-light dark:bg-surface-dark flex-col p-4 border-r border-gray-200 dark:border-gray-800/50 hidden md:flex">
                 <div className="flex items-center space-x-3 mb-8">
-                    <img alt="Agro Track Ai logo" className="w-10 h-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC6QkH5v_bOQ1o8v0eB5i4a-YwD5j2p_qR-l2B5T4i6k_xXgG_pQzF2a-zHwO8wX6iK_jWzVvT-sC-aE5eL5fB0mS3hR7cO6kP9xQ=s96" />
-                    <h1 className="text-xl font-bold text-text-light dark:text-text-dark">Agro Track Ai</h1>
+                    <img alt="AgriCart logo" className="w-10 h-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC6QkH5v_bOQ1o8v0eB5i4a-YwD5j2p_qR-l2B5T4i6k_xXgG_pQzF2a-zHwO8wX6iK_jWzVvT-sC-aE5eL5fB0mS3hR7cO6kP9xQ=s96" />
+                    <h1 className="text-xl font-bold text-text-light dark:text-text-dark">AgriCart</h1>
                 </div>
                 <nav className="flex-1 space-y-2">
                     {navItems.map(({ href, icon: Icon, label }) => (
@@ -172,8 +180,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                                 </SheetTrigger>
                                 <SheetContent side="left" className="w-64 bg-surface-light dark:bg-surface-dark p-4 border-r-0">
                                    <div className="flex items-center space-x-3 mb-8">
-                                        <img alt="Agro Track Ai logo" className="w-10 h-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC6QkH5v_bOQ1o8v0eB5i4a-YwD5j2p_qR-l2B5T4i6k_xXgG_pQzF2a-zHwO8wX6iK_jWzVvT-sC-aE5eL5fB0mS3hR7cO6kP9xQ=s96" />
-                                        <h1 className="text-xl font-bold text-text-light dark:text-text-dark">Agro Track Ai</h1>
+                                        <img alt="AgriCart logo" className="w-10 h-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC6QkH5v_bOQ1o8v0eB5i4a-YwD5j2p_qR-l2B5T4i6k_xXgG_pQzF2a-zHwO8wX6iK_jWzVvT-sC-aE5eL5fB0mS3hR7cO6kP9xQ=s96" />
+                                        <h1 className="text-xl font-bold text-text-light dark:text-text-dark">AgriCart</h1>
                                     </div>
                                     <nav className="flex-1 space-y-2">
                                         {navItems.map(({ href, icon: Icon, label }) => (

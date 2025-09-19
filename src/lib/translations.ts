@@ -24,7 +24,7 @@ export const translations = {
     chat: {
       initialMessage: "Namaste! How can I assist you with your farming needs today?",
       placeholder: "Type your message...",
-      disclaimer: "Agro Track Ai can make mistakes. Consider checking important information.",
+      disclaimer: "AgriCart can make mistakes. Consider checking important information.",
     },
     marketDataPage: {
       title: "Commodity Prices",
@@ -119,7 +119,7 @@ export const translations = {
     chat: {
       initialMessage: "नमस्ते! आज मैं आपकी खेती की जरूरतों में कैसे सहायता कर सकता हूँ?",
       placeholder: "अपना संदेश लिखें...",
-      disclaimer: "एग्रो ट्रैक एआई गलतियाँ कर सकता है। महत्वपूर्ण जानकारी की जाँच करने पर विचार करें।",
+      disclaimer: "एग्रीकार्ट गलतियाँ कर सकता है। महत्वपूर्ण जानकारी की जाँच करने पर विचार करें।",
     },
     marketDataPage: {
       title: "कमोडिटी की कीमतें",
