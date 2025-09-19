@@ -4,7 +4,7 @@
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Bot, User, Send, BarChart as BarChartIcon, Thermometer, Leaf, Bug, History, Star, MoreVertical, LogOut, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power, Plus } from 'lucide-react';
+import { Loader2, Bot, User, Send, BarChart as BarChartIcon, Thermometer, Leaf, Bug, History, Star, MoreVertical, LogOut, Cloudy, Spade, ArrowUp, ArrowDown, Mic, Paperclip, Circle as CircleIcon, Power, Plus, LogIn } from 'lucide-react';
 import { answerAgricultureQuery } from '@/ai/flows/agriculture-query';
 import type { AnswerAgricultureQueryOutput } from '@/ai/flows/agriculture-query';
 import Image from 'next/image';
@@ -22,6 +22,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { auth, googleProvider } from '@/lib/firebase';
+import { signInWithPopup, signOut, onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 type Message = {
@@ -54,7 +57,8 @@ const translations = {
     readMore: 'Read more...',
     addCommodityPlaceholder: 'e.g., Wheat',
     add: 'Add',
-    logout: 'Logout'
+    logout: 'Logout',
+    login: 'Login with Google',
   },
   hi: {
     initialMessage: 'नमस्ते! आज मैं आपकी खेती की ज़रूरतों में कैसे सहायता कर सकता हूँ? आप मुझसे फसल की जानकारी, मौसम के पूर्वानुमान, या बाज़ार की कीमतों के बारे में पूछ सकते हैं।',
@@ -76,7 +80,8 @@ const translations = {
     readMore: 'और पढ़ें...',
     addCommodityPlaceholder: 'उदा., गेहूं',
     add: 'जोड़ें',
-    logout: 'लॉग आउट'
+    logout: 'लॉग आउट',
+    login: 'गूगल से लॉग इन करें',
   }
 };
 
@@ -91,9 +96,17 @@ export default function AssistantPage() {
   const [agriNews, setAgriNews] = useState<AgriNewsArticle[]>([]);
   const [trackedCommodities, setTrackedCommodities] = useState<string[]>([]);
   const [newCommodity, setNewCommodity] = useState('');
+  const [user, setUser] = useState<FirebaseUser | null>(null);
 
 
   const t = translations[language as keyof typeof translations];
+  
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     setMessages([
@@ -240,6 +253,35 @@ export default function AssistantPage() {
       },
     ]);
   };
+  
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      toast({ title: 'Logged in successfully!' });
+    } catch (error) {
+      console.error("Error signing in:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: 'Could not sign in with Google. Please try again.',
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({ title: 'Logged out' });
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Logout Failed',
+        description: 'Could not sign out. Please try again.',
+      });
+    }
+  };
+
 
   return (
     <div className="flex h-screen w-full bg-background dark:bg-background-dark text-foreground dark:text-foreground-dark">
@@ -296,10 +338,17 @@ export default function AssistantPage() {
                         <Button variant="ghost" size="icon" className="text-muted-foreground"><MoreVertical /></Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => toast({ title: 'Logged out' })}>
-                          <LogOut className="mr-2 h-4 w-4" />
-                          <span>{t.logout}</span>
-                        </DropdownMenuItem>
+                        {user ? (
+                          <DropdownMenuItem onClick={handleLogout}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>{t.logout}</span>
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem onClick={handleLogin}>
+                            <LogIn className="mr-2 h-4 w-4" />
+                            <span>{t.login}</span>
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -340,9 +389,16 @@ export default function AssistantPage() {
                            )}
                        </div>
                         {message.role === 'user' && (
-                           <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0 shadow-md text-white">
-                             <User />
-                           </div>
+                          user ? (
+                             <Avatar className="w-10 h-10 shadow-md">
+                               <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'}/>
+                               <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                             </Avatar>
+                           ) : (
+                             <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0 shadow-md text-white">
+                               <User />
+                             </div>
+                           )
                        )}
                     </div>
                 ))}
