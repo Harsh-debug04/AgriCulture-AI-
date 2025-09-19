@@ -16,6 +16,8 @@ import {
   Newspaper,
   CircleHelp,
   User as UserIcon,
+  ChevronDown,
+  PlusCircle,
 } from 'lucide-react';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
@@ -24,6 +26,12 @@ import { ArrowUp, ArrowDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getAgriNews, AgriNewsArticle } from '@/ai/flows/agri-news-flow';
 import { Logo } from '@/components/icons/logo';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 const navItems = [
@@ -35,12 +43,16 @@ const navItems = [
     { href: '/news', icon: Newspaper, label: 'News' },
 ];
 
+const allCommodities = ['Cotton', 'Soybean', 'Paddy', 'Wheat', 'Maize', 'Gram', 'Tur', 'Mustard', 'Sugarcane', 'Groundnut'];
+
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [trackedCommodities, setTrackedCommodities] = useState(['cotton', 'soybean', 'paddy']);
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [news, setNews] = useState<AgriNewsArticle[]>([]);
   const [loadingExtras, setLoadingExtras] = useState(true);
@@ -49,12 +61,12 @@ export default function RootLayout({
     async function fetchExtras() {
       setLoadingExtras(true);
       try {
-        const [market, news] = await Promise.all([
-          getMarketData(['cotton', 'soybean', 'paddy']),
+        const [market, newsData] = await Promise.all([
+          getMarketData(trackedCommodities),
           getAgriNews()
         ]);
         setMarketData(market);
-        setNews(news);
+        setNews(newsData);
       } catch (error) {
         console.error("Error fetching extras:", error);
       } finally {
@@ -62,7 +74,15 @@ export default function RootLayout({
       }
     }
     fetchExtras();
-  }, [])
+  }, [trackedCommodities])
+  
+  const addCommodity = (commodity: string) => {
+    const lowerCommodity = commodity.toLowerCase();
+    if(!trackedCommodities.includes(lowerCommodity)){
+        setTrackedCommodities(prev => [...prev, lowerCommodity]);
+    }
+  }
+
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -138,7 +158,7 @@ export default function RootLayout({
                             <div>
                                 <h1 className="text-xl font-bold text-text-light dark:text-text-dark">Agro Track Assistant</h1>
                                 <p className="text-sm text-subtext-light dark:text-subtext-dark flex items-center">
-                                    <span className="material-symbols-outlined text-xs mr-1 text-secondary-green">circle</span> Online
+                                    <span className="material-symbols-outlined text-xs mr-1 text-secondary-green">circle</span> Online · v0.013
                                 </p>
                             </div>
                          </div>
@@ -148,7 +168,25 @@ export default function RootLayout({
                     </div>
                 </main>
                  <aside className="w-96 bg-surface-light/70 dark:bg-surface-dark/70 border-l border-gray-200 dark:border-gray-800/50 flex-col p-6 hidden lg:flex">
-                     <h2 className="text-xl font-bold mb-4">Market Watch</h2>
+                     <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold">Market Watch</h2>
+                         <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                                    <PlusCircle size={14}/>
+                                    Add Crop
+                                    <ChevronDown size={14}/>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                {allCommodities.filter(c => !trackedCommodities.includes(c.toLowerCase())).map(commodity => (
+                                     <DropdownMenuItem key={commodity} onClick={() => addCommodity(commodity)}>
+                                        {commodity}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                     </div>
                      <div className="space-y-4">
                          {loadingExtras ? Array.from({length: 3}).map((_, i) => (
                              <Card key={i} className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-card dark:shadow-card-dark animate-pulse">
