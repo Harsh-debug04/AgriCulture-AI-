@@ -150,11 +150,6 @@ export default function RootLayout({
                     ))}
                 </nav>
                  <div className="mt-auto">
-                    <div className="bg-gradient-to-br from-accent-blue/20 to-secondary-green/20 dark:from-accent-blue/30 dark:to-secondary-green/30 p-4 rounded-2xl text-center">
-                        <h3 className="font-semibold text-text-light dark:text-text-dark">Upgrade to Pro</h3>
-                        <p className="text-sm text-subtext-light dark:text-subtext-dark mt-1 mb-3">Get advanced insights and unlimited queries.</p>
-                        <Button className="w-full bg-accent-blue text-white rounded-lg hover:opacity-90 transition-opacity">Upgrade</Button>
-                    </div>
                      <div className="flex items-center space-x-3 mt-6">
                         <div className="w-10 h-10 bg-accent-blue rounded-full flex items-center justify-center flex-shrink-0">
                             <UserIcon className="text-white"/>
