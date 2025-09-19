@@ -97,3 +97,35 @@ Your application should now be running locally. You can access it at [http://loc
 ---
 
 This README provides a comprehensive guide to understanding, setting up, and running the AgriCart application. Happy farming and coding!
+
+
+## 📁 Project Structure
+
+```
+.
+├── src
+│   ├── ai
+│   │   ├── flows               # Contains the Genkit AI flows
+│   │   └── genkit.ts           # Genkit configuration
+│   ├── app                     # Next.js app directory
+│   │   ├── api                 # API routes
+│   │   ├── (main)              # Main application pages
+│   │   └── layout.tsx          # Root layout
+│   ├── components              # Reusable UI components
+│   ├── hooks                   # Custom React hooks
+│   └── lib                     # Utility functions and libraries
+├── public                      # Static assets
+├── .firebaserc                 # Firebase configuration
+├── next.config.ts              # Next.js configuration
+├── package.json                # Project dependencies and scripts
+└── README.md                   # This file
+```
+
+## 🤖 AI Flows
+
+The application uses [Genkit](https://ai.google.dev/docs/genkit) to define and run the AI flows. The core flow is:
+
+*   **`answerAgricultureQueryFlow`**: This flow takes a user's query and language as input. It uses a powerful language model to generate a comprehensive answer, suggest follow-up questions, and provide data for charts if applicable.
+
+The prompt for this flow is designed to make the AI an expert in agriculture, with a focus on Indian farming practices.
+
