@@ -117,7 +117,7 @@ export default function RootLayout({
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
       // @ts-ignore
-      return React.cloneElement(child, { language, setLanguage });
+      return React.cloneElement(child, { language });
     }
     return child;
   });
