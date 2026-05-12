@@ -72,6 +72,6 @@ const getCropDetailsFlow = ai.defineFlow(
         Ensure the content is practical and easy for a farmer in India to understand.`,
         output: { schema: CropDetailsSchema },
     });
-    return { name: input.name, ...output! };
+    return { ...output!, name: input.name };
   }
 );
