@@ -120,8 +120,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         
         const [newsData, market] = await Promise.all(promises);
 
-        setMarketData(market);
-        setNews(newsData);
+        setMarketData(market as any);
+        setNews(newsData as any);
       } catch (error) {
         console.error("Error fetching extras:", error);
       } finally {
